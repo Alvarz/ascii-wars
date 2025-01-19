@@ -1,8 +1,9 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::{prelude::*, state::commands, window::PrimaryWindow};
 
 use crate::{
     camera::MainCamera,
     player::{ApplyMove, ApplyRotation, Player},
+    shoot::WantToShoot,
     GameState,
 };
 
@@ -67,14 +68,40 @@ fn mouse_movement(
     }
 }
 
-fn mouse_click_input(mouse_button_input: Res<ButtonInput<MouseButton>>) {
+fn mouse_click_input(
+    mut commands: Commands,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+    windows: Query<&Window, With<PrimaryWindow>>,
+    cameras: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+    players: Query<Entity, With<Player>>,
+) {
     if mouse_button_input.just_pressed(MouseButton::Left) {
-        info!("start firing ");
+        // info!("start firing ");
     }
 
     if mouse_button_input.pressed(MouseButton::Left) {
+        // info!("firing ");
         // Continue firing bullets
-        info!("continue firing ");
+        // get the camera info and transform
+        // assuming there is exactly one main camera entity, so Query::single() is OK
+        let (camera, camera_transform) = cameras.single();
+
+        // There is only one primary window, so we can similarly get it from the query:
+        let window = windows.single();
+
+        // check if the cursor is inside the window and get its position
+        // then, ask bevy to convert into world coordinates, and truncate to discard Z
+        if let Some(world_position) = window
+            .cursor_position()
+            .and_then(|cursor| Some(camera.viewport_to_world(camera_transform, cursor)))
+            .map(|ray| ray.unwrap().origin.truncate())
+        {
+            info!("Shoot click");
+            let e = players.single();
+            commands.entity(e).insert(WantToShoot {
+                dir: Vec3::new(world_position.x, world_position.y, 0.0),
+            });
+        }
     }
 
     if mouse_button_input.just_released(MouseButton::Left) {
