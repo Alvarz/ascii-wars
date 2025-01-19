@@ -2,16 +2,13 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
     camera::MainCamera,
-    game::{ApplyMove, ApplyRotation, Player},
+    player::{ApplyMove, ApplyRotation, Player},
     GameState,
 };
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, keyboard_events.run_if(in_state(GameState::Playing)));
-    app.add_systems(
-        Update,
-        my_cursor_system.run_if(in_state(GameState::Playing)),
-    );
+    app.add_systems(Update, mouse_movement.run_if(in_state(GameState::Playing)));
     app.add_systems(
         Update,
         mouse_click_input.run_if(in_state(GameState::Playing)),
@@ -43,11 +40,9 @@ fn keyboard_events(
     }
 }
 
-fn my_cursor_system(
+fn mouse_movement(
     mut commands: Commands,
-    // query to get the window (so we can read the current cursor position)
     windows: Query<&Window, With<PrimaryWindow>>,
-    // query to get camera transform
     cameras: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
     players: Query<Entity, With<Player>>,
 ) {

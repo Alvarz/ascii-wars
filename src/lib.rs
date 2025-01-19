@@ -5,6 +5,7 @@ mod camera;
 mod game;
 mod input;
 mod main_menu;
+mod player;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum GameState {
@@ -26,6 +27,7 @@ impl Plugin for AppPlugin {
             assets::plugin,
             game::plugin,
             main_menu::plugin,
+            player::plugin,
         ));
 
         // // Enable dev tools for dev builds.
