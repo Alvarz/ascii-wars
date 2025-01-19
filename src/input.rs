@@ -1,7 +1,4 @@
-use bevy::{
-    input::{keyboard::KeyboardInput, ButtonState},
-    prelude::*,
-};
+use bevy::prelude::*;
 
 use crate::{
     game::{ApplyMove, Player},
@@ -14,7 +11,6 @@ pub(super) fn plugin(app: &mut App) {
 
 fn keyboard_events(
     mut commands: Commands,
-    // mut evr_kbd: EventReader<KeyboardInput>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     query: Query<Entity, With<Player>>,
 ) {
