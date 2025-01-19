@@ -6,6 +6,12 @@ use crate::{assets::CharsetAsset, GameState};
 pub struct ApplyMove {
     pub move_dir: Vec3,
 }
+
+#[derive(Component)]
+pub struct ApplyRotation {
+    pub rotate_to: Vec3,
+}
+
 #[derive(Component)]
 pub struct Player;
 
@@ -19,6 +25,7 @@ const SPEED: f32 = 500.0;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::NewGame), spawn_player);
     app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
+    app.add_systems(Update, rotation.run_if(in_state(GameState::Playing)));
     app.add_systems(
         Update,
         confine_player_movement.run_if(in_state(GameState::Playing)),
@@ -45,6 +52,15 @@ fn spawn_player(
 
     commands.insert_resource(PlayerEntity { entity });
     next_state.set(GameState::Playing);
+}
+
+fn rotation(mut commands: Commands, mut rotators: Query<(Entity, &mut Transform, &ApplyRotation)>) {
+    for (e, mut transform, rotator) in &mut rotators.iter_mut() {
+        let diff = rotator.rotate_to - transform.translation;
+        let angle = diff.y.atan2(diff.x);
+        transform.rotation = Quat::from_axis_angle(Vec3::new(0., 0., 1.), angle);
+        commands.entity(e).remove::<ApplyRotation>();
+    }
 }
 
 fn movement(
