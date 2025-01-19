@@ -15,7 +15,7 @@ pub struct PlayerEntity {
     pub entity: Entity,
 }
 
-const SPEED: f32 = 10.0;
+const SPEED: f32 = 500.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::NewGame), spawn_player);
@@ -42,6 +42,7 @@ fn spawn_player(
 
     commands.insert_resource(PlayerEntity { entity });
 
+    println!("change event to {:?}", GameState::Playing);
     next_state.set(GameState::Playing);
 }
 

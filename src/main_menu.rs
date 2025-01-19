@@ -134,7 +134,6 @@ fn spawn_button(commands: &mut Commands, parent: Entity) -> Entity {
 }
 
 fn button_system(
-    mut commands: Commands,
     mut interaction_query: Query<
         (
             &Interaction,
@@ -146,7 +145,6 @@ fn button_system(
     >,
     mut text_query: Query<&mut Text>,
     mut next_state: ResMut<NextState<GameState>>,
-    main_menu: Res<MainMenu>,
 ) {
     for (interaction, mut color, mut border_color, children) in &mut interaction_query {
         let mut text = text_query.get_mut(children[0]).unwrap();
