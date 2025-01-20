@@ -14,7 +14,7 @@ enum Direction {
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::NewGame), spawn_boss);
     app.add_systems(Update, boss_shoot.run_if(in_state(GameState::Playing)));
-    app.add_systems(FixedUpdate, movement.run_if(in_state(GameState::Playing)));
+    app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
 }
 
 fn movement(

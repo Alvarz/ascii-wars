@@ -19,8 +19,8 @@ const SPEED: f32 = 500.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::NewGame), spawn_player);
-    app.add_systems(FixedUpdate, movement.run_if(in_state(GameState::Playing)));
-    app.add_systems(FixedUpdate, rotation.run_if(in_state(GameState::Playing)));
+    app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
+    app.add_systems(Update, rotation.run_if(in_state(GameState::Playing)));
     app.add_systems(
         Update,
         confine_player_movement.run_if(in_state(GameState::Playing)),

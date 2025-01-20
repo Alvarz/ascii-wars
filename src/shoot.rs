@@ -16,6 +16,7 @@ pub struct Bullet {
     pub dir: Vec3,
     pub lifetime: f32,
     pub owner: Entity,
+    pub speed: f32,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -31,10 +32,7 @@ const PLAYER_BULLET_SPEED: f32 = 500.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, shoot.run_if(in_state(GameState::Playing)));
-    app.add_systems(
-        FixedUpdate,
-        bullet_movement.run_if(in_state(GameState::Playing)),
-    );
+    app.add_systems(Update, bullet_movement.run_if(in_state(GameState::Playing)));
     app.add_systems(
         Update,
         check_for_collisions.run_if(in_state(GameState::Playing)),
@@ -51,12 +49,13 @@ fn shoot(
         for dir in shooter.dir.iter() {
             let direction = dir - transform.translation;
 
-            spawn_player_bullet(
+            spawn_bullet(
                 &mut commands,
                 &chaset,
                 direction.normalize(),
                 transform.translation,
                 shooter.entity,
+                PLAYER_BULLET_SPEED,
             );
 
             commands.entity(e).remove::<WantToShoot>();
@@ -65,14 +64,13 @@ fn shoot(
 
     for (e, transform, shooter) in &shooters_bosses {
         for dir in shooter.dir.iter() {
-            // let direction = shooter.dir - transform.translation;
-
-            spawn_player_bullet(
+            spawn_bullet(
                 &mut commands,
                 &chaset,
                 *dir,
                 transform.translation,
                 shooter.entity,
+                BULLET_SPEED,
             );
 
             commands.entity(e).remove::<WantToShoot>();
@@ -80,12 +78,13 @@ fn shoot(
     }
 }
 
-fn spawn_player_bullet(
+fn spawn_bullet(
     commands: &mut Commands,
     chaset: &CharsetAsset,
     dir: Vec3,
     position: Vec3,
     owner: Entity,
+    speed: f32,
 ) {
     commands.spawn((
         Sprite {
@@ -102,6 +101,7 @@ fn spawn_player_bullet(
             dir,
             lifetime: 10.0,
             owner,
+            speed,
         },
     ));
 }
@@ -110,14 +110,9 @@ fn bullet_movement(
     mut commands: Commands,
     time: Res<Time>,
     mut bullets: Query<(Entity, &mut Transform, &mut Bullet), With<Bullet>>,
-    player: Single<Entity, With<Player>>,
 ) {
     for (e, mut transform, mut bullet) in &mut bullets.iter_mut() {
-        if e == *player {
-            transform.translation += bullet.dir * PLAYER_BULLET_SPEED * time.delta_secs();
-        } else {
-            transform.translation += bullet.dir * BULLET_SPEED * time.delta_secs();
-        }
+        transform.translation += bullet.dir * bullet.speed * time.delta_secs();
 
         bullet.lifetime -= time.delta_secs();
 
@@ -149,7 +144,7 @@ fn check_for_collisions(
                 // println!("scale {:?}", transform.scale);
                 if e != bullet.owner && e != camera.0 {
                     //     commands.entity(e).despawn();
-                    //     commands.entity(bullet_e).despawn();
+                    // commands.entity(bullet_e).despawn();
                 }
             }
         }
