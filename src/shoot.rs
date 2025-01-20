@@ -31,7 +31,10 @@ const PLAYER_BULLET_SPEED: f32 = 500.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, shoot.run_if(in_state(GameState::Playing)));
-    app.add_systems(Update, bullet_movement.run_if(in_state(GameState::Playing)));
+    app.add_systems(
+        FixedUpdate,
+        bullet_movement.run_if(in_state(GameState::Playing)),
+    );
     app.add_systems(
         Update,
         check_for_collisions.run_if(in_state(GameState::Playing)),
