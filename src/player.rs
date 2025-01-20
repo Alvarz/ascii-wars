@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{assets::CharsetAsset, GameState};
+use crate::{assets::CharsetAsset, enemies::Boss, GameState};
 
 #[derive(Component)]
 pub struct ApplyMove {
@@ -19,8 +19,8 @@ const SPEED: f32 = 500.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::NewGame), spawn_player);
-    app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
-    app.add_systems(Update, rotation.run_if(in_state(GameState::Playing)));
+    app.add_systems(FixedUpdate, movement.run_if(in_state(GameState::Playing)));
+    app.add_systems(FixedUpdate, rotation.run_if(in_state(GameState::Playing)));
     app.add_systems(
         Update,
         confine_player_movement.run_if(in_state(GameState::Playing)),
@@ -46,13 +46,25 @@ fn spawn_player(
     next_state.set(GameState::Playing);
 }
 
-fn rotation(mut commands: Commands, mut rotators: Query<(Entity, &mut Transform, &ApplyRotation)>) {
-    for (e, mut transform, rotator) in &mut rotators.iter_mut() {
-        let diff = rotator.rotate_to - transform.translation;
-        let angle = diff.y.atan2(diff.x);
-        transform.rotation = Quat::from_axis_angle(Vec3::new(0., 0., 1.), angle);
-        commands.entity(e).remove::<ApplyRotation>();
-    }
+fn rotation(
+    // mut commands: Commands,
+    mut player: Single<&mut Transform, (With<Player>, Without<Boss>)>,
+    boss: Single<&Transform, (With<Boss>, Without<Player>)>,
+) {
+    let player_transform = &mut player;
+
+    let to_position = (boss.translation.xy() - player_transform.translation.xy()).normalize();
+    let rotation = Quat::from_rotation_arc(Vec3::X, to_position.extend(0.));
+
+    player_transform.rotation = rotation;
+    // let player_translation = player.transform.translation.xy();
+
+    // for (e, mut transform, rotator) in &mut rotators.iter_mut() {
+    // let diff = rotator.rotate_to - transform.translation;
+    // let angle = diff.y.atan2(diff.x);
+    // transform.rotation = Quat::from_axis_angle(Vec3::new(0., 0., 1.), angle);
+    // commands.entity(e).remove::<ApplyRotation>();
+    // }
 }
 
 fn movement(
