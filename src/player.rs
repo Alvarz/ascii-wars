@@ -36,7 +36,7 @@ fn spawn_player(
             image: chaset.texture.clone(),
             texture_atlas: Some(TextureAtlas {
                 layout: chaset.atlas.clone(),
-                index: '@' as usize,
+                index: '>' as usize,
             }),
             ..Default::default()
         },

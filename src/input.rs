@@ -96,16 +96,20 @@ fn mouse_click_input(
             .and_then(|cursor| Some(camera.viewport_to_world(camera_transform, cursor)))
             .map(|ray| ray.unwrap().origin.truncate())
         {
-            info!("Shoot click");
+            // info!("Shoot click");
             let e = players.single();
+            let dir = Vec3::new(world_position.x, world_position.y, 0.0);
+            let mut directions = Vec::new();
+            directions.push(dir);
             commands.entity(e).insert(WantToShoot {
-                dir: Vec3::new(world_position.x, world_position.y, 0.0),
+                dir: directions,
+                entity: e,
             });
         }
     }
 
     if mouse_button_input.just_released(MouseButton::Left) {
         // Stop firing bullets
-        info!("stop firing ");
+        // info!("stop firing ");
     }
 }

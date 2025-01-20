@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 mod assets;
 mod camera;
+mod enemies;
 mod game;
 mod input;
 mod main_menu;
@@ -30,6 +31,7 @@ impl Plugin for AppPlugin {
             main_menu::plugin,
             player::plugin,
             shoot::plugin,
+            enemies::plugin,
         ));
 
         // // Enable dev tools for dev builds.
