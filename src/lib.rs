@@ -8,6 +8,7 @@ mod input;
 mod main_menu;
 mod player;
 mod shoot;
+mod ui_style;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum GameState {
