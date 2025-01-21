@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{assets::CharsetAsset, shoot::WantToShoot, GameState};
+use crate::{assets::CharsetAsset, game::Pool, shoot::WantToShoot, GameState};
 
 #[derive(Component)]
 pub struct Boss;
@@ -65,6 +65,11 @@ fn spawn_boss(
         },
         Boss {},
         Direction::Up,
+        Pool {
+            health: 1000.,
+            max_health: 1000.,
+            damage: 2.,
+        },
     ));
 }
 

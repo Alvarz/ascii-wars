@@ -21,6 +21,7 @@ pub enum GameState {
     Playing,
     PauseMenu,
     GameOver,
+    NextLevel,
 }
 
 pub struct AppPlugin;

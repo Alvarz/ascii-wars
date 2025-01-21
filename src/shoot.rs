@@ -3,7 +3,9 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{assets::CharsetAsset, camera::MainCamera, enemies::Boss, player::Player, GameState};
+use crate::{
+    assets::CharsetAsset, camera::MainCamera, enemies::Boss, game::Pool, player::Player, GameState,
+};
 
 #[derive(Component)]
 pub struct WantToShoot {
@@ -17,6 +19,7 @@ pub struct Bullet {
     pub lifetime: f32,
     pub owner: Entity,
     pub speed: f32,
+    pub damage: f32,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -41,11 +44,11 @@ pub(super) fn plugin(app: &mut App) {
 
 fn shoot(
     mut commands: Commands,
-    shooters: Query<(Entity, &Transform, &WantToShoot), With<Player>>,
-    shooters_bosses: Query<(Entity, &Transform, &WantToShoot), With<Boss>>,
+    shooters: Query<(Entity, &Transform, &WantToShoot, &Pool), With<Player>>,
+    shooters_bosses: Query<(Entity, &Transform, &WantToShoot, &Pool), With<Boss>>,
     chaset: Res<CharsetAsset>,
 ) {
-    for (e, transform, shooter) in &shooters {
+    for (e, transform, shooter, pool) in &shooters {
         for dir in shooter.dir.iter() {
             let direction = dir - transform.translation;
 
@@ -56,13 +59,14 @@ fn shoot(
                 transform.translation,
                 shooter.entity,
                 PLAYER_BULLET_SPEED,
+                pool.damage,
             );
 
             commands.entity(e).remove::<WantToShoot>();
         }
     }
 
-    for (e, transform, shooter) in &shooters_bosses {
+    for (e, transform, shooter, pool) in &shooters_bosses {
         for dir in shooter.dir.iter() {
             spawn_bullet(
                 &mut commands,
@@ -71,6 +75,7 @@ fn shoot(
                 transform.translation,
                 shooter.entity,
                 BULLET_SPEED,
+                pool.damage,
             );
 
             commands.entity(e).remove::<WantToShoot>();
@@ -85,6 +90,7 @@ fn spawn_bullet(
     position: Vec3,
     owner: Entity,
     speed: f32,
+    damage: f32,
 ) {
     commands.spawn((
         Sprite {
@@ -102,6 +108,7 @@ fn spawn_bullet(
             lifetime: 10.0,
             owner,
             speed,
+            damage,
         },
     ));
 }
@@ -124,13 +131,16 @@ fn bullet_movement(
 }
 
 fn check_for_collisions(
-    commands: Commands,
-    bullets: Query<(Entity, &Transform, &Bullet), With<Bullet>>,
-    no_bullets: Query<(Entity, &Transform), Without<Bullet>>,
+    mut commands: Commands,
+    bullets: Query<(Entity, &Transform, &Bullet), (With<Bullet>, Without<Pool>)>,
+    mut no_bullets: Query<(Entity, &Transform, &mut Pool), (Without<Bullet>, With<Pool>)>,
+    player: Single<Entity, (With<Player>, Without<Boss>)>,
+    boss: Single<Entity, (With<Boss>, Without<Player>)>,
     camera: Single<(Entity, &MainCamera)>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     for (bullet_e, bullet_transform, bullet) in &bullets {
-        for (e, transform) in &no_bullets {
+        for (e, transform, mut pool) in &mut no_bullets {
             let collision = check_collision(
                 BoundingCircle::new(bullet_transform.translation.truncate(), 8. * 0.5),
                 Aabb2d::new(
@@ -139,12 +149,25 @@ fn check_for_collisions(
                 ),
             );
 
-            if let Some(collision) = collision {
+            if let Some(_) = collision {
+                // commands.entity(bullet_e).despawn();
                 // info!("collide with {:?} on {:?}", e, collision);
                 // println!("scale {:?}", transform.scale);
                 if e != bullet.owner && e != camera.0 {
+                    pool.health -= bullet.damage;
+
+                    if pool.health < 0. {
+                        if e == *player {
+                            next_state.set(GameState::GameOver);
+                            info!("DEAD player");
+                        } else if e == *boss {
+                            info!("DEAD boss");
+                            next_state.set(GameState::NextLevel);
+                            commands.entity(e).despawn();
+                        }
+                    }
+
                     //     commands.entity(e).despawn();
-                    // commands.entity(bullet_e).despawn();
                 }
             }
         }

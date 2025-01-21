@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 
 use crate::{
+    game::Pool,
+    player::Player,
     ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR, MAIN_TEXT_COLOR},
     GameState,
 };
@@ -91,20 +93,6 @@ fn spawn_health_bar(commands: &mut Commands, parent: Entity) -> Entity {
     health_bar
 }
 
-fn check_health(
-    time: Res<Time>,
-    mut health_bar_query: Single<(&Node, &mut Children), With<HealthBar>>,
-    mut health_bar_content_query: Query<&mut Node, Without<HealthBar>>,
-) {
-    //     health_bar
-
-    let children = &mut health_bar_query.1;
-
-    let mut health_bar_content = health_bar_content_query.get_mut(children[0]).unwrap();
-
-    health_bar_content.width = Val::Percent(25.);
-}
-
 fn spawn_text(commands: &mut Commands, parent: Entity) {
     let text = "level: 1";
 
@@ -131,4 +119,19 @@ fn spawn_text(commands: &mut Commands, parent: Entity) {
         .id();
 
     commands.entity(parent).add_children(&[child]);
+}
+
+fn check_health(
+    pool_query: Single<&Pool, With<Player>>,
+    mut health_bar_query: Single<(&Node, &mut Children), With<HealthBar>>,
+    mut health_bar_content_query: Query<&mut Node, Without<HealthBar>>,
+) {
+    //     health_bar
+
+    let children = &mut health_bar_query.1;
+
+    let mut health_bar_content = health_bar_content_query.get_mut(children[0]).unwrap();
+
+    let current_health = (pool_query.health / pool_query.max_health) * 100.;
+    health_bar_content.width = Val::Percent(current_health.clamp(0., 100.));
 }

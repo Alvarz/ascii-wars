@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{assets::CharsetAsset, enemies::Boss, GameState};
+use crate::{assets::CharsetAsset, enemies::Boss, game::Pool, GameState};
 
 #[derive(Component)]
 pub struct ApplyMove {
@@ -41,6 +41,11 @@ fn spawn_player(
             ..Default::default()
         },
         Player {},
+        Pool {
+            health: 10.,
+            max_health: 10.,
+            damage: 2.,
+        },
     ));
 
     next_state.set(GameState::Playing);
