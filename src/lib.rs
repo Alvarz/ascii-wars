@@ -4,6 +4,7 @@ mod assets;
 mod camera;
 mod enemies;
 mod game;
+mod game_over_menu;
 mod input;
 mod main_menu;
 mod pause_menu;
@@ -18,6 +19,7 @@ pub enum GameState {
     NewGame,
     Playing,
     PauseMenu,
+    GameOver,
 }
 
 pub struct AppPlugin;
@@ -32,6 +34,7 @@ impl Plugin for AppPlugin {
             game::plugin,
             main_menu::plugin,
             pause_menu::plugin,
+            game_over_menu::plugin,
             player::plugin,
             shoot::plugin,
             enemies::plugin,
