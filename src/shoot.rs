@@ -124,7 +124,7 @@ fn bullet_movement(
 }
 
 fn check_for_collisions(
-    mut commands: Commands,
+    commands: Commands,
     bullets: Query<(Entity, &Transform, &Bullet), With<Bullet>>,
     no_bullets: Query<(Entity, &Transform), Without<Bullet>>,
     camera: Single<(Entity, &MainCamera)>,

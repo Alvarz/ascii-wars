@@ -1,9 +1,8 @@
-use bevy::{prelude::*, state::commands, window::PrimaryWindow};
+use bevy::prelude::*;
 
 use crate::{
-    camera::MainCamera,
     enemies::Boss,
-    player::{ApplyMove, ApplyRotation, Player},
+    player::{ApplyMove, Player},
     shoot::WantToShoot,
     GameState,
 };

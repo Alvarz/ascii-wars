@@ -1,4 +1,4 @@
-use bevy::color::palettes::css::{BLACK, BLUE, WHITE};
+use bevy::color::palettes::css::{BLACK, WHITE};
 use bevy::prelude::*;
 
 pub const NORMAL_BUTTON: Color = Color::Srgba(BLACK);
