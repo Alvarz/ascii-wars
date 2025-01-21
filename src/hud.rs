@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR},
+    ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR, MAIN_TEXT_COLOR},
     GameState,
 };
 
@@ -22,7 +22,8 @@ pub(super) fn plugin(app: &mut App) {
 
 fn hud(mut commands: Commands) {
     let container = spawn_container(&mut commands);
-    let health_box = spawn_health_bar(&mut commands, container);
+    let _ = spawn_health_bar(&mut commands, container);
+    spawn_text(&mut commands, container);
 }
 
 fn clear_hud(mut commands: Commands, menu: Res<Hud>) {
@@ -32,8 +33,11 @@ fn clear_hud(mut commands: Commands, menu: Res<Hud>) {
 
 fn spawn_container(commands: &mut Commands) -> Entity {
     let container = Node {
+        display: Display::Flex,
+        flex_direction: FlexDirection::Row,
         width: Val::Percent(100.0),
         height: Val::Percent(100.0),
+        justify_content: JustifyContent::Center, // align vertical
         ..default()
     };
 
@@ -99,4 +103,32 @@ fn check_health(
     let mut health_bar_content = health_bar_content_query.get_mut(children[0]).unwrap();
 
     health_bar_content.width = Val::Percent(25.);
+}
+
+fn spawn_text(commands: &mut Commands, parent: Entity) {
+    let text = "level: 1";
+
+    let child = commands
+        .spawn((
+            Text::new(text),
+            TextFont {
+                font_size: 20.0,
+                ..default()
+            },
+            TextColor(MAIN_TEXT_COLOR),
+            TextLayout::new_with_justify(JustifyText::Center),
+            Node {
+                margin: UiRect {
+                    left: Val::Percent(20.),
+                    right: Val::Percent(48.),
+                    top: Val::Percent(1.),
+                    bottom: Val::Percent(0.),
+                },
+                position_type: PositionType::Relative,
+                ..default()
+            },
+        ))
+        .id();
+
+    commands.entity(parent).add_children(&[child]);
 }
