@@ -5,6 +5,7 @@ mod camera;
 mod enemies;
 mod game;
 mod game_over_menu;
+mod hud;
 mod input;
 mod main_menu;
 mod pause_menu;
@@ -36,6 +37,7 @@ impl Plugin for AppPlugin {
             pause_menu::plugin,
             game_over_menu::plugin,
             player::plugin,
+            hud::plugin,
             shoot::plugin,
             enemies::plugin,
         ));
