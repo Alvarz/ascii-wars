@@ -6,6 +6,7 @@ mod enemies;
 mod game;
 mod input;
 mod main_menu;
+mod pause_menu;
 mod player;
 mod shoot;
 mod ui_style;
@@ -30,6 +31,7 @@ impl Plugin for AppPlugin {
             assets::plugin,
             game::plugin,
             main_menu::plugin,
+            pause_menu::plugin,
             player::plugin,
             shoot::plugin,
             enemies::plugin,

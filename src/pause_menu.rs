@@ -7,35 +7,40 @@ use crate::ui_style::{
 use crate::GameState;
 
 #[derive(Resource, Clone)]
-pub struct MainMenu {
-    pub entity: Entity,
+pub struct PauseMenu {
+    entity: Entity,
 }
 
 #[derive(Component, Clone)]
-pub struct PlayButton;
+pub struct ContinueButton;
 
 #[derive(Component, Clone)]
 pub struct ExitButton;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::MainMenu), main_menu);
+    app.add_systems(OnEnter(GameState::PauseMenu), main_menu);
     app.add_systems(
         Update,
-        play_button_system.run_if(in_state(GameState::MainMenu)),
+        continue_button_system.run_if(in_state(GameState::PauseMenu)),
     );
 
     app.add_systems(
         Update,
-        exit_button_system.run_if(in_state(GameState::MainMenu)),
+        exit_button_system.run_if(in_state(GameState::PauseMenu)),
     );
-    app.add_systems(OnExit(GameState::MainMenu), clear_main_menu);
+    app.add_systems(OnExit(GameState::PauseMenu), clear_pause_menu);
 }
 
 fn main_menu(mut commands: Commands) {
     let container = spawn_container(&mut commands);
     let menu_box = spawn_box(&mut commands, container);
     spawn_text(&mut commands, menu_box);
-    spawn_button(&mut commands, menu_box, "Play".to_string(), PlayButton);
+    spawn_button(
+        &mut commands,
+        menu_box,
+        "Continue".to_string(),
+        ContinueButton,
+    );
     spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton);
 }
 
@@ -49,14 +54,14 @@ fn spawn_container(commands: &mut Commands) -> Entity {
 
     let e = commands.spawn(container).id();
 
-    commands.insert_resource(MainMenu { entity: e });
+    commands.insert_resource(PauseMenu { entity: e });
 
     e
 }
 
-fn clear_main_menu(mut commands: Commands, menu: Res<MainMenu>) {
+fn clear_pause_menu(mut commands: Commands, menu: Res<PauseMenu>) {
     commands.entity(menu.entity).despawn_recursive();
-    commands.remove_resource::<MainMenu>();
+    commands.remove_resource::<PauseMenu>();
 }
 
 fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
@@ -66,7 +71,7 @@ fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
                 margin: UiRect::all(Val::Percent(5.)),
-                width: Val::Percent(60.),
+                width: Val::Percent(40.),
                 height: Val::Percent(60.),
                 border: UiRect::all(Val::Px(2.)),
                 align_items: AlignItems::Center, // align horizontal
@@ -84,13 +89,13 @@ fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
 }
 
 fn spawn_text(commands: &mut Commands, parent: Entity) {
-    let text = "ASCII Wars!";
+    let text = "Pause";
 
     let child = commands
         .spawn((
             Text::new(text),
             TextFont {
-                font_size: 50.0,
+                font_size: 20.0,
                 ..default()
             },
             TextColor(MAIN_TEXT_COLOR),
@@ -136,7 +141,7 @@ where
         .spawn((
             TextColor(COLOR_TEXT_BUTTON),
             TextFont {
-                font_size: 32.0,
+                font_size: 18.0,
                 ..default()
             },
             Text::new(text),
@@ -148,14 +153,14 @@ where
     button
 }
 
-fn play_button_system(
+fn continue_button_system(
     mut interaction_query: Query<
         (
             &Interaction,
             &mut BackgroundColor,
             &mut BorderColor,
             &Children,
-            &PlayButton,
+            &ContinueButton,
         ),
         (Changed<Interaction>, With<Button>),
     >,
@@ -169,7 +174,7 @@ fn play_button_system(
                 *color = PRESSED_BUTTON.into();
                 border_color.0 = BOX_BORDER_COLOR.into();
                 *text_color = HOVER_TEXT_COLOR.into();
-                next_state.set(GameState::NewGame)
+                next_state.set(GameState::Playing)
             }
 
             Interaction::Hovered => {

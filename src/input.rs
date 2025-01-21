@@ -21,15 +21,19 @@ fn keyboard_events(
     mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     query: Query<Entity, With<Player>>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     let mut move_dir = Vec3::ZERO;
     if keyboard_input.pressed(KeyCode::ArrowUp) || keyboard_input.pressed(KeyCode::KeyW) {
         move_dir.y = 1.0;
-    } else if keyboard_input.pressed(KeyCode::ArrowDown) || keyboard_input.pressed(KeyCode::KeyS) {
+    }
+    if keyboard_input.pressed(KeyCode::ArrowDown) || keyboard_input.pressed(KeyCode::KeyS) {
         move_dir.y -= 1.0;
-    } else if keyboard_input.pressed(KeyCode::ArrowLeft) || keyboard_input.pressed(KeyCode::KeyA) {
+    }
+    if keyboard_input.pressed(KeyCode::ArrowLeft) || keyboard_input.pressed(KeyCode::KeyA) {
         move_dir.x -= 1.0;
-    } else if keyboard_input.pressed(KeyCode::ArrowRight) || keyboard_input.pressed(KeyCode::KeyD) {
+    }
+    if keyboard_input.pressed(KeyCode::ArrowRight) || keyboard_input.pressed(KeyCode::KeyD) {
         move_dir.x = 1.0;
     }
 
@@ -39,6 +43,10 @@ fn keyboard_events(
                 move_dir: move_dir.normalize(),
             });
         }
+    }
+
+    if keyboard_input.pressed(KeyCode::Escape) {
+        next_state.set(GameState::PauseMenu)
     }
 }
 
@@ -72,8 +80,6 @@ fn keyboard_events(
 fn mouse_click_input(
     mut commands: Commands,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    windows: Query<&Window, With<PrimaryWindow>>,
-    cameras: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
     player: Single<Entity, (With<Player>, Without<Boss>)>,
     boss: Single<&Transform, (With<Boss>, Without<Player>)>,
 ) {
