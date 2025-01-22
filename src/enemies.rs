@@ -15,6 +15,20 @@ enum Direction {
     Down,
 }
 
+const BOSSES_GLYPH: [usize; 11] = [
+    'a' as usize,
+    'A' as usize,
+    'B' as usize,
+    'C' as usize,
+    'D' as usize,
+    'E' as usize,
+    'F' as usize,
+    'G' as usize,
+    'H' as usize,
+    'I' as usize,
+    'J' as usize,
+];
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, boss_shoot.run_if(in_state(GameState::Playing)));
     app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
@@ -42,7 +56,7 @@ fn movement(
     }
 }
 
-pub fn spawn_boss_1(commands: &mut Commands, chaset: &CharsetAsset, window: &Window) {
+pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Window, level: usize) {
     let spawn_pos_x = window.width() * 0.5;
     let spawn_pos_y = window.height() * 0.5;
 
@@ -51,7 +65,7 @@ pub fn spawn_boss_1(commands: &mut Commands, chaset: &CharsetAsset, window: &Win
             image: chaset.texture.clone(),
             texture_atlas: Some(TextureAtlas {
                 layout: chaset.atlas.clone(),
-                index: '@' as usize,
+                index: BOSSES_GLYPH[level],
             }),
             ..Default::default()
         },

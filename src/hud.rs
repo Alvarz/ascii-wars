@@ -1,24 +1,30 @@
 use bevy::prelude::*;
 
 use crate::{
-    game::Pool,
+    game::{GameStatus, Pool},
     player::Player,
     ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR, MAIN_TEXT_COLOR},
     GameState,
 };
 
-#[derive(Resource, Clone)]
+#[derive(Resource)]
 pub struct Hud {
     entity: Entity,
 }
 
-#[derive(Component, Clone)]
+#[derive(Component)]
 pub struct HealthBar;
+
+#[derive(Component)]
+pub struct LevelLabel;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::Playing), hud);
     app.add_systems(Update, check_health.run_if(in_state(GameState::Playing)));
-
+    app.add_systems(
+        Update,
+        update_level_label.run_if(in_state(GameState::Playing)),
+    );
     //     app.add_systems(OnEnter(GameState::MainMenu), clear_hud);
 }
 
@@ -98,6 +104,7 @@ fn spawn_text(commands: &mut Commands, parent: Entity) {
 
     let child = commands
         .spawn((
+            LevelLabel,
             Text::new(text),
             TextFont {
                 font_size: 20.0,
@@ -124,6 +131,7 @@ fn spawn_text(commands: &mut Commands, parent: Entity) {
 fn check_health(
     pool_query: Query<&Pool, With<Player>>,
     health_bar_query: Query<(&Node, &Children), With<HealthBar>>,
+    // text_query: Query<(&Node, &Children), (With<Text>)>,
     mut health_bar_content_query: Query<&mut Node, Without<HealthBar>>,
 ) {
     for (_, children) in &health_bar_query {
@@ -134,4 +142,19 @@ fn check_health(
             health_bar_content.width = Val::Percent(current_health.clamp(0., 100.));
         }
     }
+}
+
+fn update_level_label(
+    mut level_label_text: Query<&mut Text, With<LevelLabel>>,
+    game_status: Res<GameStatus>,
+) {
+    for mut label in &mut level_label_text {
+        *label = Text::new(format!("level: {:?}", game_status.level));
+    }
+
+    // let mut level_label = level_label_text.single_mut();
+
+    // for mut text in &mut level_label_text {
+    //     *text = Text::new(format!("level: {:?}", game_status.level))
+    // }
 }
