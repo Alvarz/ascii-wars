@@ -4,7 +4,12 @@ use bevy::{
 };
 
 use crate::{
-    assets::CharsetAsset, camera::MainCamera, enemies::Boss, game::Pool, player::Player, GameState,
+    assets::CharsetAsset,
+    camera::MainCamera,
+    enemies::Boss,
+    game::{GamePlayEntity, Pool},
+    player::Player,
+    GameState,
 };
 
 #[derive(Component)]
@@ -110,6 +115,7 @@ fn spawn_bullet(
             speed,
             damage,
         },
+        GamePlayEntity,
     ));
 }
 
@@ -154,7 +160,11 @@ fn check_for_collisions(
                 // info!("collide with {:?} on {:?}", e, collision);
                 // println!("scale {:?}", transform.scale);
                 if e != bullet.owner && e != camera.0 {
-                    pool.health -= bullet.damage;
+                    if !pool.god_mode {
+                        pool.health -= bullet.damage;
+                    }
+
+                    commands.entity(bullet_e).despawn();
 
                     if pool.health < 0. {
                         if e == *player {
@@ -163,11 +173,8 @@ fn check_for_collisions(
                         } else if e == *boss {
                             info!("DEAD boss");
                             next_state.set(GameState::NextLevel);
-                            commands.entity(e).despawn();
                         }
                     }
-
-                    //     commands.entity(e).despawn();
                 }
             }
         }

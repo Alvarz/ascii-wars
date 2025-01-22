@@ -25,6 +25,5 @@ fn load_atlas(
         texture: texture_handle.clone(),
     };
     // add sprite atlas as resource
-    println!("Indserted asset");
     commands.insert_resource(charset.clone());
 }

@@ -1,6 +1,10 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{assets::CharsetAsset, game::Pool, shoot::WantToShoot, GameState};
+use crate::{
+    assets::CharsetAsset,
+    game::{GamePlayEntity, GameState, Pool},
+    shoot::WantToShoot,
+};
 
 #[derive(Component)]
 pub struct Boss;
@@ -12,7 +16,6 @@ enum Direction {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::NewGame), spawn_boss);
     app.add_systems(Update, boss_shoot.run_if(in_state(GameState::Playing)));
     app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
 }
@@ -39,13 +42,7 @@ fn movement(
     }
 }
 
-fn spawn_boss(
-    mut commands: Commands,
-    chaset: Res<CharsetAsset>,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-) {
-    let window = window_query.get_single().unwrap();
-
+pub fn spawn_boss_1(commands: &mut Commands, chaset: &CharsetAsset, window: &Window) {
     let spawn_pos_x = window.width() * 0.5;
     let spawn_pos_y = window.height() * 0.5;
 
@@ -66,35 +63,49 @@ fn spawn_boss(
         Boss {},
         Direction::Up,
         Pool {
-            health: 1000.,
+            health: 10.,
             max_health: 1000.,
             damage: 2.,
+            god_mode: false,
         },
+        GamePlayEntity,
     ));
 }
 
 fn boss_shoot(
     mut commands: Commands,
-    boss: Single<(Entity, &Transform), With<Boss>>,
+    bosses: Query<(Entity, &Transform), With<Boss>>,
     time: Res<Time>,
+    world: &World,
 ) {
-    let e = boss.0;
-    let transform = boss.1;
-    //transform.rotation = Quat::from_rotation_z(time.elapsed_secs() * 2.);
-    let rotation = Quat::from_rotation_z(time.elapsed_secs() * 2.);
+    for (e, transform) in &bosses {
+        let rotation = Quat::from_rotation_z(time.elapsed_secs() * 2.);
 
-    let dir = rotation.mul_vec3(transform.up().as_vec3());
-    let dir2 = rotation.mul_vec3(transform.down().as_vec3());
-    let dir3 = rotation.mul_vec3(transform.left().as_vec3());
-    let dir4 = rotation.mul_vec3(transform.right().as_vec3());
+        let dir = rotation.mul_vec3(transform.up().as_vec3());
+        let dir2 = rotation.mul_vec3(transform.down().as_vec3());
+        let dir3 = rotation.mul_vec3(transform.left().as_vec3());
+        let dir4 = rotation.mul_vec3(transform.right().as_vec3());
 
-    let mut directions = Vec::new();
-    directions.push(dir);
-    directions.push(dir2);
-    directions.push(dir3);
-    directions.push(dir4);
-    commands.entity(e).insert(WantToShoot {
-        dir: directions,
-        entity: e,
-    });
+        let mut directions = Vec::new();
+        directions.push(dir);
+        directions.push(dir2);
+        directions.push(dir3);
+        directions.push(dir4);
+
+        let entity_result = world.get_entity(e);
+
+        match entity_result {
+            Ok(_) => {
+                // warn!("result !");
+                commands.entity(e).insert(WantToShoot {
+                    dir: directions,
+                    entity: e,
+                });
+            }
+            Err(_) => warn!("Entity {:?} does not exist!", e),
+            // Err(_) => {
+            //     ;
+            // }
+        };
+    }
 }

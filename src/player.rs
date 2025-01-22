@@ -1,15 +1,15 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{assets::CharsetAsset, enemies::Boss, game::Pool, GameState};
+use crate::{
+    assets::CharsetAsset,
+    enemies::Boss,
+    game::{GamePlayEntity, Pool},
+    GameState,
+};
 
 #[derive(Component)]
 pub struct ApplyMove {
     pub move_dir: Vec3,
-}
-
-#[derive(Component)]
-pub struct ApplyRotation {
-    pub rotate_to: Vec3,
 }
 
 #[derive(Component)]
@@ -18,7 +18,6 @@ pub struct Player;
 const SPEED: f32 = 500.0;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::NewGame), spawn_player);
     app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
     app.add_systems(Update, rotation.run_if(in_state(GameState::Playing)));
     app.add_systems(
@@ -26,11 +25,7 @@ pub(super) fn plugin(app: &mut App) {
         confine_player_movement.run_if(in_state(GameState::Playing)),
     );
 }
-fn spawn_player(
-    mut commands: Commands,
-    chaset: Res<CharsetAsset>,
-    mut next_state: ResMut<NextState<GameState>>,
-) {
+pub fn spawn_player(commands: &mut Commands, chaset: &CharsetAsset) {
     commands.spawn((
         Sprite {
             image: chaset.texture.clone(),
@@ -45,14 +40,13 @@ fn spawn_player(
             health: 10.,
             max_health: 10.,
             damage: 2.,
+            god_mode: true,
         },
+        GamePlayEntity,
     ));
-
-    next_state.set(GameState::Playing);
 }
 
 fn rotation(
-    // mut commands: Commands,
     mut player: Single<&mut Transform, (With<Player>, Without<Boss>)>,
     boss: Single<&Transform, (With<Boss>, Without<Player>)>,
 ) {
@@ -62,14 +56,6 @@ fn rotation(
     let rotation = Quat::from_rotation_arc(Vec3::X, to_position.extend(0.));
 
     player_transform.rotation = rotation;
-    // let player_translation = player.transform.translation.xy();
-
-    // for (e, mut transform, rotator) in &mut rotators.iter_mut() {
-    // let diff = rotator.rotate_to - transform.translation;
-    // let angle = diff.y.atan2(diff.x);
-    // transform.rotation = Quat::from_axis_angle(Vec3::new(0., 0., 1.), angle);
-    // commands.entity(e).remove::<ApplyRotation>();
-    // }
 }
 
 fn movement(

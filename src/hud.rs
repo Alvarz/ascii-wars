@@ -122,16 +122,16 @@ fn spawn_text(commands: &mut Commands, parent: Entity) {
 }
 
 fn check_health(
-    pool_query: Single<&Pool, With<Player>>,
-    mut health_bar_query: Single<(&Node, &mut Children), With<HealthBar>>,
+    pool_query: Query<&Pool, With<Player>>,
+    health_bar_query: Query<(&Node, &Children), With<HealthBar>>,
     mut health_bar_content_query: Query<&mut Node, Without<HealthBar>>,
 ) {
-    //     health_bar
+    for (_, children) in &health_bar_query {
+        let mut health_bar_content = health_bar_content_query.get_mut(children[0]).unwrap();
 
-    let children = &mut health_bar_query.1;
-
-    let mut health_bar_content = health_bar_content_query.get_mut(children[0]).unwrap();
-
-    let current_health = (pool_query.health / pool_query.max_health) * 100.;
-    health_bar_content.width = Val::Percent(current_health.clamp(0., 100.));
+        for pool in &pool_query {
+            let current_health = (pool.health / pool.max_health) * 100.;
+            health_bar_content.width = Val::Percent(current_health.clamp(0., 100.));
+        }
+    }
 }
