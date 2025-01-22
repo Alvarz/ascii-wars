@@ -89,7 +89,7 @@ fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
 }
 
 fn spawn_text(commands: &mut Commands, parent: Entity) {
-    let text = "GameOver";
+    let text = "Game Over";
 
     let child = commands
         .spawn((
