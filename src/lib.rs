@@ -13,6 +13,7 @@ mod pause_menu;
 mod player;
 mod shoot;
 mod ui_style;
+mod winner_page;
 
 pub struct AppPlugin;
 
@@ -27,6 +28,7 @@ impl Plugin for AppPlugin {
             main_menu::plugin,
             pause_menu::plugin,
             game_over_menu::plugin,
+            winner_page::plugin,
             player::plugin,
             hud::plugin,
             shoot::plugin,

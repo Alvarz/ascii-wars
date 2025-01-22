@@ -22,6 +22,7 @@ pub enum GameState {
     PauseMenu,
     GameOver,
     NextLevel,
+    WinGame,
 }
 
 #[derive(Resource, Debug)]
@@ -36,12 +37,19 @@ pub(super) fn plugin(app: &mut App) {
         max_level: 3,
     });
 
-    app.add_systems(OnEnter(GameState::NewGame), prepare_level);
+    app.add_systems(
+        OnEnter(GameState::NewGame),
+        (new_game, prepare_level).chain(),
+    );
 
     app.add_systems(
         OnEnter(GameState::NextLevel),
         (clean_up_level, prepare_level).chain(),
     );
+}
+
+fn new_game(mut game_status: ResMut<GameStatus>) {
+    game_status.level = 0;
 }
 
 fn prepare_level(
@@ -53,8 +61,12 @@ fn prepare_level(
 ) {
     let window = window_query.get_single().unwrap();
 
+    if game_status.level >= game_status.max_level {
+        next_state.set(GameState::WinGame);
+        return;
+    }
+
     game_status.level += 1;
-    info!("preparing for next level {:?}", game_status.level);
 
     spawn_player(&mut commands, &chaset);
 
@@ -64,14 +76,7 @@ fn prepare_level(
 }
 
 fn spawn_level_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Window, level: i32) {
-    // let boss = bosses_char[level];
-
     spawn_boss(commands, chaset, window, level as usize);
-
-    // if level == 1 {
-    // } else {
-    //     spawn_boss(commands, chaset, window);
-    // }
 }
 
 fn clean_up_level(mut commands: Commands, mut entities: Query<Entity, With<GamePlayEntity>>) {

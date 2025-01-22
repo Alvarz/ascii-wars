@@ -7,7 +7,7 @@ use crate::ui_style::{
 use crate::GameState;
 
 #[derive(Resource, Clone)]
-pub struct PauseMenu {
+pub struct WinnerPage {
     entity: Entity,
 }
 
@@ -18,20 +18,20 @@ pub struct PlayAgainButton;
 pub struct ExitButton;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::GameOver), game_over_menu);
+    app.add_systems(OnEnter(GameState::WinGame), win_game_page);
     app.add_systems(
         Update,
-        play_again_button_system.run_if(in_state(GameState::GameOver)),
+        play_again_button_system.run_if(in_state(GameState::WinGame)),
     );
 
     app.add_systems(
         Update,
-        exit_button_system.run_if(in_state(GameState::GameOver)),
+        exit_button_system.run_if(in_state(GameState::WinGame)),
     );
-    app.add_systems(OnExit(GameState::GameOver), clear_game_over_menu);
+    app.add_systems(OnExit(GameState::WinGame), clear_win_game_page);
 }
 
-fn game_over_menu(mut commands: Commands) {
+fn win_game_page(mut commands: Commands) {
     let container = spawn_container(&mut commands);
     let menu_box = spawn_box(&mut commands, container);
     spawn_text(&mut commands, menu_box);
@@ -54,14 +54,14 @@ fn spawn_container(commands: &mut Commands) -> Entity {
 
     let e = commands.spawn(container).id();
 
-    commands.insert_resource(PauseMenu { entity: e });
+    commands.insert_resource(WinnerPage { entity: e });
 
     e
 }
 
-fn clear_game_over_menu(mut commands: Commands, menu: Res<PauseMenu>) {
+fn clear_win_game_page(mut commands: Commands, menu: Res<WinnerPage>) {
     commands.entity(menu.entity).despawn_recursive();
-    commands.remove_resource::<PauseMenu>();
+    commands.remove_resource::<WinnerPage>();
 }
 
 fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
@@ -89,7 +89,7 @@ fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
 }
 
 fn spawn_text(commands: &mut Commands, parent: Entity) {
-    let text = "GameOver";
+    let text = "WinGame";
 
     let child = commands
         .spawn((
