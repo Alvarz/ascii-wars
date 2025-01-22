@@ -37,6 +37,8 @@ pub(super) fn plugin(app: &mut App) {
         max_level: 3,
     });
 
+    app.add_systems(OnEnter(GameState::GameOver), clean_up_level);
+
     app.add_systems(
         OnEnter(GameState::NewGame),
         (new_game, prepare_level).chain(),
@@ -80,7 +82,6 @@ fn spawn_level_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Win
 }
 
 fn clean_up_level(mut commands: Commands, mut entities: Query<Entity, With<GamePlayEntity>>) {
-    info!("Doing clean up",);
     for e in &mut entities {
         commands.entity(e).despawn();
     }

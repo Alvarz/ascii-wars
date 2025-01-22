@@ -130,7 +130,6 @@ fn bullet_movement(
         bullet.lifetime -= time.delta_secs();
 
         if bullet.lifetime <= 0. {
-            //     info!("removed bullet");
             commands.entity(e).despawn();
         }
     }
@@ -156,9 +155,6 @@ fn check_for_collisions(
             );
 
             if let Some(_) = collision {
-                // commands.entity(bullet_e).despawn();
-                // info!("collide with {:?} on {:?}", e, collision);
-                // println!("scale {:?}", transform.scale);
                 if e != bullet.owner && e != camera.0 {
                     if !pool.god_mode {
                         pool.health -= bullet.damage;
@@ -169,9 +165,7 @@ fn check_for_collisions(
                     if pool.health < 0. {
                         if e == *player {
                             next_state.set(GameState::GameOver);
-                            info!("DEAD player");
                         } else if e == *boss {
-                            info!("DEAD boss");
                             next_state.set(GameState::NextLevel);
                         }
                     }
