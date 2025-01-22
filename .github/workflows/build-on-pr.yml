@@ -1,0 +1,52 @@
+name: Build Rust on Pull Request
+
+on:
+  pull_request: # Triggers the workflow for all pull requests
+    branches: 
+      - '*' # This targets all branches where the PR is opened or updated
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the branch of the pull request
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }} # Use the branch of the PR as the checkout reference
+
+      - name: install dependencies
+        run: sudo apt -y install libfontconfig1-dev
+
+      # Set up Rust
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable  # Use the stable Rust toolchain
+          override: true
+
+      # Cache Cargo dependencies
+      - name: Cache Cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache Cargo build
+        uses: actions/cache@v3
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-
+
+      # Build the project
+      - name: Build the project
+        run: cargo build --release
+
+      # # Run tests (optional)
+      # - name: Run tests
+      #   run: cargo test
