@@ -1,6 +1,10 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{assets::CharsetAsset, enemies::spawn_boss, player::spawn_player};
+use crate::{
+    assets::CharsetAsset,
+    enemies::{spawn_boss, ShootPattern1},
+    player::spawn_player,
+};
 
 #[derive(Component)]
 pub struct GamePlayEntity;
@@ -78,7 +82,7 @@ fn prepare_level(
 }
 
 fn spawn_level_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Window, level: i32) {
-    spawn_boss(commands, chaset, window, level as usize);
+    spawn_boss(commands, chaset, window, level as usize, ShootPattern1);
 }
 
 fn clean_up_level(mut commands: Commands, mut entities: Query<Entity, With<GamePlayEntity>>) {
