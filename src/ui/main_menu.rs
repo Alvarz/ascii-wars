@@ -4,7 +4,7 @@ use crate::ui::ui_commons::{
     exit_button_system, spawn_box, spawn_button, spawn_container, spawn_text, ExitButton,
 };
 use crate::ui::ui_style::{
-    BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
+    BOX_BORDER_COLOR, HOVERED_BUTTON, HOVER_TEXT_COLOR,
     MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
 };
 use crate::GameState;

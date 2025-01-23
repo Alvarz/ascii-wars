@@ -2,7 +2,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
     assets::CharsetAsset,
-    enemies::{spawn_boss, ShootPattern1, ShootPattern2},
+    enemies::spawn_boss,
     player::spawn_player,
 };
 
