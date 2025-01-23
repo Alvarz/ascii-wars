@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     game::GameState,
-    ui_style::{
+    ui::ui_style::{
         BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
         MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
     },

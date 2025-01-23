@@ -3,8 +3,8 @@ use bevy::prelude::*;
 use crate::{
     game::{GameStatus, Pool},
     player::Player,
-    ui_commons::spawn_container,
-    ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR, MAIN_TEXT_COLOR},
+    ui::ui_commons::spawn_container,
+    ui::ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR, MAIN_TEXT_COLOR},
     GameState,
 };
 
