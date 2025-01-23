@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
 use crate::ui_commons::{
-    exit_button_system, spawn_box, spawn_button, spawn_container, spawn_text, ExitButton,
+    exit_button_system, play_again_button_system, spawn_box, spawn_button, spawn_container,
+    spawn_text, ExitButton, PlayAgainButton,
 };
 use crate::ui_style::{
     BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
@@ -13,9 +14,6 @@ use crate::GameState;
 pub struct PauseMenu {
     entity: Entity,
 }
-
-#[derive(Component, Clone)]
-pub struct PlayAgainButton;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::GameOver), game_over_menu);
@@ -56,43 +54,4 @@ fn game_over_menu(mut commands: Commands) {
 fn clear_game_over_menu(mut commands: Commands, menu: Res<PauseMenu>) {
     commands.entity(menu.entity).despawn_recursive();
     commands.remove_resource::<PauseMenu>();
-}
-
-fn play_again_button_system(
-    mut interaction_query: Query<
-        (
-            &Interaction,
-            &mut BackgroundColor,
-            &mut BorderColor,
-            &Children,
-            &PlayAgainButton,
-        ),
-        (Changed<Interaction>, With<Button>),
-    >,
-    mut text_color_query: Query<&mut TextColor>,
-    mut next_state: ResMut<NextState<GameState>>,
-) {
-    for (interaction, mut color, mut border_color, children, _) in &mut interaction_query {
-        let mut text_color = text_color_query.get_mut(children[0]).unwrap();
-        match *interaction {
-            Interaction::Pressed => {
-                *color = PRESSED_BUTTON.into();
-                border_color.0 = BOX_BORDER_COLOR.into();
-                *text_color = HOVER_TEXT_COLOR.into();
-                next_state.set(GameState::NewGame)
-            }
-
-            Interaction::Hovered => {
-                *color = HOVERED_BUTTON.into();
-                border_color.0 = BOX_BORDER_COLOR.into();
-                *text_color = HOVER_TEXT_COLOR.into()
-            }
-            Interaction::None => {
-                *color = NORMAL_BUTTON.into();
-                border_color.0 = BOX_BORDER_COLOR.into();
-                *text_color = MAIN_TEXT_COLOR.into()
-                // border_color.0 = NORMAL_BUTTON.into();
-            }
-        }
-    }
 }
