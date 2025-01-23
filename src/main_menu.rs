@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::ui_commons::spawn_container;
+use crate::ui_commons::{spawn_box, spawn_container};
 use crate::ui_style::{
     BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
     MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
@@ -35,7 +35,12 @@ pub(super) fn plugin(app: &mut App) {
 fn main_menu(mut commands: Commands) {
     let container = spawn_container(&mut commands);
     commands.insert_resource(MainMenu { entity: container });
-    let menu_box = spawn_box(&mut commands, container);
+    let menu_box = spawn_box(
+        &mut commands,
+        container,
+        Val::Percent(60.),
+        Val::Percent(60.),
+    );
     spawn_text(&mut commands, menu_box);
     spawn_button(&mut commands, menu_box, "Play".to_string(), PlayButton);
     spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton);
@@ -46,29 +51,29 @@ fn clear_main_menu(mut commands: Commands, menu: Res<MainMenu>) {
     commands.remove_resource::<MainMenu>();
 }
 
-fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
-    let child = commands
-        .spawn((
-            Node {
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                margin: UiRect::all(Val::Percent(5.)),
-                width: Val::Percent(60.),
-                height: Val::Percent(60.),
-                border: UiRect::all(Val::Px(2.)),
-                align_items: AlignItems::Center, // align horizontal
-                // justify_content: JustifyContent::Center, // align vertical
-                ..default()
-            },
-            BackgroundColor(BOX_BG_COLOR),
-            BorderColor(BOX_BORDER_COLOR),
-        ))
-        .id();
+// fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
+//     let child = commands
+//         .spawn((
+//             Node {
+//                 display: Display::Flex,
+//                 flex_direction: FlexDirection::Column,
+//                 margin: UiRect::all(Val::Percent(5.)),
+//                 width: Val::Percent(60.),
+//                 height: Val::Percent(60.),
+//                 border: UiRect::all(Val::Px(2.)),
+//                 align_items: AlignItems::Center, // align horizontal
+//                 // justify_content: JustifyContent::Center, // align vertical
+//                 ..default()
+//             },
+//             BackgroundColor(BOX_BG_COLOR),
+//             BorderColor(BOX_BORDER_COLOR),
+//         ))
+//         .id();
 
-    commands.entity(parent).add_children(&[child]);
+//     commands.entity(parent).add_children(&[child]);
 
-    child
-}
+//     child
+// }
 
 fn spawn_text(commands: &mut Commands, parent: Entity) {
     let text = "ASCII Wars!";
