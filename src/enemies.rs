@@ -104,8 +104,8 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
     match level {
         1 => commands.entity(e).insert(ShootPattern1),
         2 => commands.entity(e).insert(ShootPattern2),
-        3 => commands.entity(e).insert((ShootPattern2, ShootPattern2)),
-        _ => commands.entity(e).insert((ShootPattern2, ShootPattern2)),
+        3 => commands.entity(e).insert((ShootPattern1, ShootPattern2)),
+        _ => commands.entity(e).insert((ShootPattern1, ShootPattern2)),
     };
 }
 
