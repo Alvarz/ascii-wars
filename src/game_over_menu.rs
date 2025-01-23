@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::ui_commons::{spawn_box, spawn_container, spawn_text};
+use crate::ui_commons::{spawn_box, spawn_button, spawn_container, spawn_text};
 use crate::ui_style::{
     BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
     MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
@@ -49,8 +49,9 @@ fn game_over_menu(mut commands: Commands) {
         menu_box,
         "Play Again".to_string(),
         PlayAgainButton,
+        18.,
     );
-    spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton);
+    spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton, 18.);
 }
 
 fn clear_game_over_menu(mut commands: Commands, menu: Res<PauseMenu>) {
@@ -105,47 +106,47 @@ fn clear_game_over_menu(mut commands: Commands, menu: Res<PauseMenu>) {
 //     commands.entity(parent).add_children(&[child]);
 // }
 
-fn spawn_button<T>(commands: &mut Commands, parent: Entity, text: String, btn_type: T) -> Entity
-where
-    T: Bundle,
-{
-    let button = commands
-        .spawn((
-            Node {
-                margin: UiRect::all(Val::Percent(1.)),
-                position_type: PositionType::Relative,
-                width: Val::Percent(60.),
-                height: Val::Percent(20.),
+// fn spawn_button<T>(commands: &mut Commands, parent: Entity, text: String, btn_type: T) -> Entity
+// where
+//     T: Bundle,
+// {
+//     let button = commands
+//         .spawn((
+//             Node {
+//                 margin: UiRect::all(Val::Percent(1.)),
+//                 position_type: PositionType::Relative,
+//                 width: Val::Percent(60.),
+//                 height: Val::Percent(20.),
 
-                border: UiRect::all(Val::Px(2.0)),
-                // horizontally center child text
-                justify_content: JustifyContent::Center,
-                // vertically center child text
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            BorderColor(BOX_BORDER_COLOR),
-            BackgroundColor(NORMAL_BUTTON),
-            Button,
-            btn_type,
-        ))
-        .id();
+//                 border: UiRect::all(Val::Px(2.0)),
+//                 // horizontally center child text
+//                 justify_content: JustifyContent::Center,
+//                 // vertically center child text
+//                 align_items: AlignItems::Center,
+//                 ..default()
+//             },
+//             BorderColor(BOX_BORDER_COLOR),
+//             BackgroundColor(NORMAL_BUTTON),
+//             Button,
+//             btn_type,
+//         ))
+//         .id();
 
-    let button_text = commands
-        .spawn((
-            TextColor(COLOR_TEXT_BUTTON),
-            TextFont {
-                font_size: 18.0,
-                ..default()
-            },
-            Text::new(text),
-        ))
-        .id();
-    commands.entity(button).add_children(&[button_text]);
-    commands.entity(parent).add_children(&[button]);
+//     let button_text = commands
+//         .spawn((
+//             TextColor(COLOR_TEXT_BUTTON),
+//             TextFont {
+//                 font_size: 18.0,
+//                 ..default()
+//             },
+//             Text::new(text),
+//         ))
+//         .id();
+//     commands.entity(button).add_children(&[button_text]);
+//     commands.entity(parent).add_children(&[button]);
 
-    button
-}
+//     button
+// }
 
 fn play_again_button_system(
     mut interaction_query: Query<
