@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::ui_commons::spawn_container;
 use crate::ui_style::{
     BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
     MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
@@ -33,6 +34,8 @@ pub(super) fn plugin(app: &mut App) {
 
 fn game_over_menu(mut commands: Commands) {
     let container = spawn_container(&mut commands);
+    commands.insert_resource(PauseMenu { entity: container });
+
     let menu_box = spawn_box(&mut commands, container);
     spawn_text(&mut commands, menu_box);
     spawn_button(
@@ -42,21 +45,6 @@ fn game_over_menu(mut commands: Commands) {
         PlayAgainButton,
     );
     spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton);
-}
-
-fn spawn_container(commands: &mut Commands) -> Entity {
-    let container = Node {
-        width: Val::Percent(100.0),
-        height: Val::Percent(100.0),
-        justify_content: JustifyContent::Center,
-        ..default()
-    };
-
-    let e = commands.spawn(container).id();
-
-    commands.insert_resource(PauseMenu { entity: e });
-
-    e
 }
 
 fn clear_game_over_menu(mut commands: Commands, menu: Res<PauseMenu>) {

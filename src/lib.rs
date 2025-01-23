@@ -12,6 +12,7 @@ mod main_menu;
 mod pause_menu;
 mod player;
 mod shoot;
+mod ui_commons;
 mod ui_style;
 mod winner_page;
 
