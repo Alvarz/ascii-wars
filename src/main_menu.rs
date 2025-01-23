@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::ui_commons::{spawn_box, spawn_container};
+use crate::ui_commons::{spawn_box, spawn_container, spawn_text};
 use crate::ui_style::{
     BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
     MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
@@ -41,7 +41,7 @@ fn main_menu(mut commands: Commands) {
         Val::Percent(60.),
         Val::Percent(60.),
     );
-    spawn_text(&mut commands, menu_box);
+    spawn_text(&mut commands, menu_box, "ASCII Wars!", 50.0);
     spawn_button(&mut commands, menu_box, "Play".to_string(), PlayButton);
     spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton);
 }
@@ -75,28 +75,28 @@ fn clear_main_menu(mut commands: Commands, menu: Res<MainMenu>) {
 //     child
 // }
 
-fn spawn_text(commands: &mut Commands, parent: Entity) {
-    let text = "ASCII Wars!";
+// fn spawn_text(commands: &mut Commands, parent: Entity) {
+//     let text = "ASCII Wars!";
 
-    let child = commands
-        .spawn((
-            Text::new(text),
-            TextFont {
-                font_size: 50.0,
-                ..default()
-            },
-            TextColor(MAIN_TEXT_COLOR),
-            TextLayout::new_with_justify(JustifyText::Center),
-            Node {
-                margin: UiRect::all(Val::Percent(10.)),
-                position_type: PositionType::Relative,
-                ..default()
-            },
-        ))
-        .id();
+//     let child = commands
+//         .spawn((
+//             Text::new(text),
+//             TextFont {
+//                 font_size: 50.0,
+//                 ..default()
+//             },
+//             TextColor(MAIN_TEXT_COLOR),
+//             TextLayout::new_with_justify(JustifyText::Center),
+//             Node {
+//                 margin: UiRect::all(Val::Percent(10.)),
+//                 position_type: PositionType::Relative,
+//                 ..default()
+//             },
+//         ))
+//         .id();
 
-    commands.entity(parent).add_children(&[child]);
-}
+//     commands.entity(parent).add_children(&[child]);
+// }
 
 fn spawn_button<T>(commands: &mut Commands, parent: Entity, text: String, btn_type: T) -> Entity
 where
