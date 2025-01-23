@@ -3,7 +3,8 @@ use bevy::prelude::*;
 use crate::{
     game::{GameStatus, Pool},
     player::Player,
-    ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR, MAIN_TEXT_COLOR},
+    ui::ui_commons::spawn_container,
+    ui::ui_style::{BOX_BG_COLOR, BOX_BORDER_COLOR, HEALTH_BAR_COLOR, MAIN_TEXT_COLOR},
     GameState,
 };
 
@@ -30,6 +31,7 @@ pub(super) fn plugin(app: &mut App) {
 
 fn hud(mut commands: Commands) {
     let container = spawn_container(&mut commands);
+    commands.insert_resource(Hud { entity: container });
     let _ = spawn_health_bar(&mut commands, container);
     spawn_text(&mut commands, container);
 }
@@ -37,23 +39,6 @@ fn hud(mut commands: Commands) {
 fn clear_hud(mut commands: Commands, menu: Res<Hud>) {
     commands.entity(menu.entity).despawn_recursive();
     commands.remove_resource::<Hud>();
-}
-
-fn spawn_container(commands: &mut Commands) -> Entity {
-    let container = Node {
-        display: Display::Flex,
-        flex_direction: FlexDirection::Row,
-        width: Val::Percent(100.0),
-        height: Val::Percent(100.0),
-        justify_content: JustifyContent::Center, // align vertical
-        ..default()
-    };
-
-    let e = commands.spawn(container).id();
-
-    commands.insert_resource(Hud { entity: e });
-
-    e
 }
 
 fn spawn_health_bar(commands: &mut Commands, parent: Entity) -> Entity {

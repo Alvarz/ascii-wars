@@ -3,7 +3,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     assets::CharsetAsset,
     game::{GamePlayEntity, GameState, Pool},
-    shoot::WantToShoot,
+    shoot::spawn_bullet,
 };
 
 #[derive(Component)]
@@ -14,6 +14,12 @@ enum Direction {
     Up,
     Down,
 }
+
+#[derive(Component)]
+pub struct ShootPattern1;
+
+#[derive(Component)]
+pub struct ShootPattern2;
 
 const BOSSES_GLYPH: [usize; 11] = [
     'a' as usize,
@@ -30,7 +36,15 @@ const BOSSES_GLYPH: [usize; 11] = [
 ];
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, boss_shoot.run_if(in_state(GameState::Playing)));
+    app.add_systems(
+        Update,
+        boss_shoot_pattern_1.run_if(in_state(GameState::Playing)),
+    );
+
+    app.add_systems(
+        Update,
+        boss_shoot_pattern_2.run_if(in_state(GameState::Playing)),
+    );
     app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
 }
 
@@ -60,39 +74,49 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
     let spawn_pos_x = window.width() * 0.5;
     let spawn_pos_y = window.height() * 0.5;
 
-    commands.spawn((
-        Sprite {
-            image: chaset.texture.clone(),
-            texture_atlas: Some(TextureAtlas {
-                layout: chaset.atlas.clone(),
-                index: BOSSES_GLYPH[level],
-            }),
-            ..Default::default()
-        },
-        Transform {
-            translation: Vec3::new(spawn_pos_x, spawn_pos_y, 0.),
-            rotation: Quat::IDENTITY,
-            scale: Vec3::new(20.0, 20.0, 0.),
-        },
-        Boss {},
-        Direction::Up,
-        Pool {
-            health: 1000.,
-            max_health: 1000.,
-            damage: 2.,
-            god_mode: false,
-        },
-        GamePlayEntity,
-    ));
+    let e = commands
+        .spawn((
+            Sprite {
+                image: chaset.texture.clone(),
+                texture_atlas: Some(TextureAtlas {
+                    layout: chaset.atlas.clone(),
+                    index: BOSSES_GLYPH[level],
+                }),
+                ..Default::default()
+            },
+            Transform {
+                translation: Vec3::new(spawn_pos_x, spawn_pos_y, 0.),
+                rotation: Quat::IDENTITY,
+                scale: Vec3::new(20.0, 20.0, 0.),
+            },
+            Boss {},
+            Direction::Up,
+            Pool {
+                health: 1000.,
+                max_health: 1000.,
+                damage: 2.,
+                god_mode: false,
+            },
+            GamePlayEntity,
+        ))
+        .id();
+
+    match level {
+        1 => commands.entity(e).insert(ShootPattern1),
+        2 => commands.entity(e).insert(ShootPattern2),
+        3 => commands.entity(e).insert((ShootPattern1, ShootPattern2)),
+        _ => commands.entity(e).insert((ShootPattern1, ShootPattern2)),
+    };
 }
 
-fn boss_shoot(
+fn boss_shoot_pattern_1(
     mut commands: Commands,
-    bosses: Query<(Entity, &Transform), With<Boss>>,
+    bosses: Query<(Entity, &Transform, &Pool), (With<Boss>, With<ShootPattern1>)>,
     time: Res<Time>,
-    world: &World,
+    chaset: Res<CharsetAsset>,
 ) {
-    for (e, transform) in &bosses {
+    let bullet_speed: f32 = 100.0;
+    for (e, transform, pool) in &bosses {
         let rotation = Quat::from_rotation_z(time.elapsed_secs() * 2.);
 
         let dir = rotation.mul_vec3(transform.up().as_vec3());
@@ -106,20 +130,66 @@ fn boss_shoot(
         directions.push(dir3);
         directions.push(dir4);
 
-        let entity_result = world.get_entity(e);
+        shoot(
+            &mut commands,
+            e,
+            directions,
+            &chaset,
+            transform,
+            pool.damage,
+            bullet_speed,
+        );
+    }
+}
 
-        match entity_result {
-            Ok(_) => {
-                // warn!("result !");
-                commands.entity(e).insert(WantToShoot {
-                    dir: directions,
-                    entity: e,
-                });
-            }
-            Err(_) => warn!("Entity {:?} does not exist!", e),
-            // Err(_) => {
-            //     ;
-            // }
-        };
+fn boss_shoot_pattern_2(
+    mut commands: Commands,
+    bosses: Query<(Entity, &Transform, &Pool), (With<Boss>, With<ShootPattern2>)>,
+    chaset: Res<CharsetAsset>,
+) {
+    let bullet_speed: f32 = 100.0;
+    for (e, transform, pool) in &bosses {
+        let dir = transform.up().as_vec3();
+        let dir2 = transform.down().as_vec3();
+        let dir3 = transform.left().as_vec3();
+        let dir4 = transform.right().as_vec3();
+
+        let mut directions = Vec::new();
+        directions.push(dir);
+        directions.push(dir2);
+        directions.push(dir3);
+        directions.push(dir4);
+
+        shoot(
+            &mut commands,
+            e,
+            directions,
+            &chaset,
+            transform,
+            pool.damage,
+            bullet_speed,
+        );
+    }
+}
+
+fn shoot(
+    commands: &mut Commands,
+    entity: Entity,
+    dir: Vec<Vec3>,
+    chaset: &CharsetAsset,
+    transform: &Transform,
+    damage: f32,
+    bullet_speed: f32,
+) {
+    for dir in dir.iter() {
+        spawn_bullet(
+            commands,
+            &chaset,
+            *dir,
+            transform.translation,
+            entity,
+            bullet_speed,
+            damage,
+        );
     }
 }

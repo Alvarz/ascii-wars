@@ -1,50 +1,20 @@
 use bevy::prelude::*;
 
-use crate::ui_style::{
-    BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
-    MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
+use crate::{
+    game::GameState,
+    ui::ui_style::{
+        BOX_BG_COLOR, BOX_BORDER_COLOR, COLOR_TEXT_BUTTON, HOVERED_BUTTON, HOVER_TEXT_COLOR,
+        MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
+    },
 };
-use crate::GameState;
-
-#[derive(Resource, Clone)]
-pub struct WinnerPage {
-    entity: Entity,
-}
-
-#[derive(Component, Clone)]
-pub struct PlayAgainButton;
 
 #[derive(Component, Clone)]
 pub struct ExitButton;
 
-pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::WinGame), win_game_page);
-    app.add_systems(
-        Update,
-        play_again_button_system.run_if(in_state(GameState::WinGame)),
-    );
+#[derive(Component, Clone)]
+pub struct PlayAgainButton;
 
-    app.add_systems(
-        Update,
-        exit_button_system.run_if(in_state(GameState::WinGame)),
-    );
-    app.add_systems(OnExit(GameState::WinGame), clear_win_game_page);
-}
-
-fn win_game_page(mut commands: Commands) {
-    let container = spawn_container(&mut commands);
-    let menu_box = spawn_box(&mut commands, container);
-    spawn_text(&mut commands, menu_box);
-    spawn_button(
-        &mut commands,
-        menu_box,
-        "Play Again".to_string(),
-        PlayAgainButton,
-    );
-    spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton);
-}
-
-fn spawn_container(commands: &mut Commands) -> Entity {
+pub fn spawn_container(commands: &mut Commands) -> Entity {
     let container = Node {
         width: Val::Percent(100.0),
         height: Val::Percent(100.0),
@@ -54,25 +24,18 @@ fn spawn_container(commands: &mut Commands) -> Entity {
 
     let e = commands.spawn(container).id();
 
-    commands.insert_resource(WinnerPage { entity: e });
-
     e
 }
 
-fn clear_win_game_page(mut commands: Commands, menu: Res<WinnerPage>) {
-    commands.entity(menu.entity).despawn_recursive();
-    commands.remove_resource::<WinnerPage>();
-}
-
-fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
+pub fn spawn_box(commands: &mut Commands, parent: Entity, width: Val, height: Val) -> Entity {
     let child = commands
         .spawn((
             Node {
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
                 margin: UiRect::all(Val::Percent(5.)),
-                width: Val::Percent(40.),
-                height: Val::Percent(60.),
+                width,
+                height,
                 border: UiRect::all(Val::Px(2.)),
                 align_items: AlignItems::Center, // align horizontal
                 // justify_content: JustifyContent::Center, // align vertical
@@ -88,14 +51,14 @@ fn spawn_box(commands: &mut Commands, parent: Entity) -> Entity {
     child
 }
 
-fn spawn_text(commands: &mut Commands, parent: Entity) {
-    let text = "WinGame";
+pub fn spawn_text(commands: &mut Commands, parent: Entity, text: &str, font_size: f32) -> Entity {
+    //     let text = "ASCII Wars!";
 
     let child = commands
         .spawn((
             Text::new(text),
             TextFont {
-                font_size: 20.0,
+                font_size,
                 ..default()
             },
             TextColor(MAIN_TEXT_COLOR),
@@ -109,12 +72,17 @@ fn spawn_text(commands: &mut Commands, parent: Entity) {
         .id();
 
     commands.entity(parent).add_children(&[child]);
+
+    child
 }
 
-fn spawn_button<T>(commands: &mut Commands, parent: Entity, text: String, btn_type: T) -> Entity
-where
-    T: Bundle,
-{
+pub fn spawn_button<T: Bundle>(
+    commands: &mut Commands,
+    parent: Entity,
+    text: String,
+    btn_type: T,
+    font_size: f32,
+) -> Entity {
     let button = commands
         .spawn((
             Node {
@@ -141,7 +109,7 @@ where
         .spawn((
             TextColor(COLOR_TEXT_BUTTON),
             TextFont {
-                font_size: 18.0,
+                font_size,
                 ..default()
             },
             Text::new(text),
@@ -153,46 +121,7 @@ where
     button
 }
 
-fn play_again_button_system(
-    mut interaction_query: Query<
-        (
-            &Interaction,
-            &mut BackgroundColor,
-            &mut BorderColor,
-            &Children,
-            &PlayAgainButton,
-        ),
-        (Changed<Interaction>, With<Button>),
-    >,
-    mut text_color_query: Query<&mut TextColor>,
-    mut next_state: ResMut<NextState<GameState>>,
-) {
-    for (interaction, mut color, mut border_color, children, _) in &mut interaction_query {
-        let mut text_color = text_color_query.get_mut(children[0]).unwrap();
-        match *interaction {
-            Interaction::Pressed => {
-                *color = PRESSED_BUTTON.into();
-                border_color.0 = BOX_BORDER_COLOR.into();
-                *text_color = HOVER_TEXT_COLOR.into();
-                next_state.set(GameState::NewGame)
-            }
-
-            Interaction::Hovered => {
-                *color = HOVERED_BUTTON.into();
-                border_color.0 = BOX_BORDER_COLOR.into();
-                *text_color = HOVER_TEXT_COLOR.into()
-            }
-            Interaction::None => {
-                *color = NORMAL_BUTTON.into();
-                border_color.0 = BOX_BORDER_COLOR.into();
-                *text_color = MAIN_TEXT_COLOR.into()
-                // border_color.0 = NORMAL_BUTTON.into();
-            }
-        }
-    }
-}
-
-fn exit_button_system(
+pub fn exit_button_system(
     mut interaction_query: Query<
         (
             &Interaction,
@@ -214,6 +143,45 @@ fn exit_button_system(
                 border_color.0 = BOX_BORDER_COLOR.into();
                 *text_color = HOVER_TEXT_COLOR.into();
                 exit.send(AppExit::Success);
+            }
+
+            Interaction::Hovered => {
+                *color = HOVERED_BUTTON.into();
+                border_color.0 = BOX_BORDER_COLOR.into();
+                *text_color = HOVER_TEXT_COLOR.into()
+            }
+            Interaction::None => {
+                *color = NORMAL_BUTTON.into();
+                border_color.0 = BOX_BORDER_COLOR.into();
+                *text_color = MAIN_TEXT_COLOR.into()
+                // border_color.0 = NORMAL_BUTTON.into();
+            }
+        }
+    }
+}
+
+pub fn play_again_button_system(
+    mut interaction_query: Query<
+        (
+            &Interaction,
+            &mut BackgroundColor,
+            &mut BorderColor,
+            &Children,
+            &PlayAgainButton,
+        ),
+        (Changed<Interaction>, With<Button>),
+    >,
+    mut text_color_query: Query<&mut TextColor>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    for (interaction, mut color, mut border_color, children, _) in &mut interaction_query {
+        let mut text_color = text_color_query.get_mut(children[0]).unwrap();
+        match *interaction {
+            Interaction::Pressed => {
+                *color = PRESSED_BUTTON.into();
+                border_color.0 = BOX_BORDER_COLOR.into();
+                *text_color = HOVER_TEXT_COLOR.into();
+                next_state.set(GameState::NewGame)
             }
 
             Interaction::Hovered => {

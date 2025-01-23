@@ -35,7 +35,6 @@ enum Collision {
     Bottom,
 }
 
-const BULLET_SPEED: f32 = 100.0;
 const PLAYER_BULLET_SPEED: f32 = 500.0;
 
 pub(super) fn plugin(app: &mut App) {
@@ -50,7 +49,7 @@ pub(super) fn plugin(app: &mut App) {
 fn shoot(
     mut commands: Commands,
     shooters: Query<(Entity, &Transform, &WantToShoot, &Pool), With<Player>>,
-    shooters_bosses: Query<(Entity, &Transform, &WantToShoot, &Pool), With<Boss>>,
+    // shooters_bosses: Query<(Entity, &Transform, &WantToShoot, &Pool), With<Boss>>,
     chaset: Res<CharsetAsset>,
 ) {
     for (e, transform, shooter, pool) in &shooters {
@@ -71,24 +70,24 @@ fn shoot(
         }
     }
 
-    for (e, transform, shooter, pool) in &shooters_bosses {
-        for dir in shooter.dir.iter() {
-            spawn_bullet(
-                &mut commands,
-                &chaset,
-                *dir,
-                transform.translation,
-                shooter.entity,
-                BULLET_SPEED,
-                pool.damage,
-            );
+    // for (e, transform, shooter, pool) in &shooters_bosses {
+    //     for dir in shooter.dir.iter() {
+    //         spawn_bullet(
+    //             &mut commands,
+    //             &chaset,
+    //             *dir,
+    //             transform.translation,
+    //             shooter.entity,
+    //             BULLET_SPEED,
+    //             pool.damage,
+    //         );
 
-            commands.entity(e).remove::<WantToShoot>();
-        }
-    }
+    //         commands.entity(e).remove::<WantToShoot>();
+    //     }
+    // }
 }
 
-fn spawn_bullet(
+pub fn spawn_bullet(
     commands: &mut Commands,
     chaset: &CharsetAsset,
     dir: Vec3,
