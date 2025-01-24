@@ -1,8 +1,11 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use std::{thread, time::Duration};
+
+use bevy::{prelude::*, utils::info, window::PrimaryWindow};
 
 use crate::{
     assets::CharsetAsset,
     game::{GamePlayEntity, GameState, Pool},
+    player::Player,
     shoot::spawn_bullet,
 };
 
@@ -16,11 +19,79 @@ enum Direction {
 }
 
 #[derive(Component)]
-pub struct ShootPattern1;
+struct ShootPattern1 {
+    bullet_speed: f32,
+    spawn_count: i32,
+    rotation_speed: f32,
+    fire_rate: f32,
+    bullet_size: f32,
+    bullet_glyph: usize,
+}
 
 #[derive(Component)]
-pub struct ShootPattern2;
+struct ShootPattern2 {
+    bullet_speed: f32,
+    spawn_count: i32,
+    rotation_speed: f32,
+    fire_rate: f32,
+    bullet_size: f32,
+    bullet_glyph: usize,
+}
 
+#[derive(Component)]
+struct ShootPattern3 {
+    bullet_speed: f32,
+    spawn_count: i32,
+    rotation_speed: f32,
+    fire_rate: f32,
+    bullet_size: f32,
+    bullet_glyph: usize,
+}
+
+#[derive(Component)]
+struct ShootPattern4 {
+    bullet_speed: f32,
+    spawn_count: i32,
+    rotation_speed: f32,
+    fire_rate: f32,
+    bullet_size: f32,
+    bullet_glyph: usize,
+}
+
+#[derive(Component)]
+struct ShootPatternDirectShoot {
+    bullet_speed: f32,
+    spawn_count: i32,
+    fire_rate: f32,
+    bullet_size: f32,
+    bullet_glyph: usize,
+    bullet_frequency: u64,
+}
+
+#[derive(Resource)]
+struct Pattern1Timer {
+    timer: Timer,
+}
+
+#[derive(Resource)]
+struct Pattern2Timer {
+    timer: Timer,
+}
+
+#[derive(Resource)]
+struct Pattern3Timer {
+    timer: Timer,
+}
+
+#[derive(Resource)]
+struct Pattern4Timer {
+    timer: Timer,
+}
+
+#[derive(Resource)]
+struct ShootPatternDirectShootTimer {
+    timer: Timer,
+}
 const BOSSES_GLYPH: [usize; 11] = [
     'a' as usize,
     'A' as usize,
@@ -36,6 +107,22 @@ const BOSSES_GLYPH: [usize; 11] = [
 ];
 
 pub(super) fn plugin(app: &mut App) {
+    app.insert_resource(ShootPatternDirectShootTimer {
+        timer: Timer::from_seconds(0.0, TimerMode::Repeating),
+    });
+    app.insert_resource(Pattern4Timer {
+        timer: Timer::from_seconds(0.0, TimerMode::Repeating),
+    });
+    app.insert_resource(Pattern3Timer {
+        timer: Timer::from_seconds(0.0, TimerMode::Repeating),
+    });
+    app.insert_resource(Pattern2Timer {
+        timer: Timer::from_seconds(0.0, TimerMode::Repeating),
+    });
+
+    app.insert_resource(Pattern1Timer {
+        timer: Timer::from_seconds(0.0, TimerMode::Repeating),
+    });
     app.add_systems(
         Update,
         boss_shoot_pattern_1.run_if(in_state(GameState::Playing)),
@@ -45,6 +132,22 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         boss_shoot_pattern_2.run_if(in_state(GameState::Playing)),
     );
+
+    app.add_systems(
+        Update,
+        boss_shoot_pattern_3.run_if(in_state(GameState::Playing)),
+    );
+
+    app.add_systems(
+        Update,
+        boss_shoot_pattern_4.run_if(in_state(GameState::Playing)),
+    );
+
+    app.add_systems(
+        Update,
+        boss_shoot_pattern_direct_shoot.run_if(in_state(GameState::Playing)),
+    );
+
     app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
 }
 
@@ -87,10 +190,10 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
             Transform {
                 translation: Vec3::new(spawn_pos_x, spawn_pos_y, 0.),
                 rotation: Quat::IDENTITY,
-                scale: Vec3::new(20.0, 20.0, 0.),
+                scale: Vec3::new(2.0, 2.0, 0.),
             },
             Boss {},
-            Direction::Up,
+            // Direction::Up,
             Pool {
                 health: 1000.,
                 max_health: 1000.,
@@ -102,74 +205,193 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
         .id();
 
     match level {
-        1 => commands.entity(e).insert(ShootPattern1),
-        2 => commands.entity(e).insert(ShootPattern2),
-        3 => commands.entity(e).insert((ShootPattern1, ShootPattern2)),
-        _ => commands.entity(e).insert((ShootPattern1, ShootPattern2)),
+        1 => boss_number_1(commands, e),
+        _ => boss_number_1(commands, e),
     };
 }
 
 fn boss_shoot_pattern_1(
     mut commands: Commands,
-    bosses: Query<(Entity, &Transform, &Pool), (With<Boss>, With<ShootPattern1>)>,
+    bosses: Query<(Entity, &Transform, &Pool, &ShootPattern1), (With<Boss>, With<ShootPattern1>)>,
     time: Res<Time>,
-    chaset: Res<CharsetAsset>,
+    mut pattern_timer: ResMut<Pattern1Timer>,
+    charset: Res<CharsetAsset>,
 ) {
-    let bullet_speed: f32 = 100.0;
-    for (e, transform, pool) in &bosses {
-        let rotation = Quat::from_rotation_z(time.elapsed_secs() * 2.);
-
-        let dir = rotation.mul_vec3(transform.up().as_vec3());
-        let dir2 = rotation.mul_vec3(transform.down().as_vec3());
-        let dir3 = rotation.mul_vec3(transform.left().as_vec3());
-        let dir4 = rotation.mul_vec3(transform.right().as_vec3());
-
-        let mut directions = Vec::new();
-        directions.push(dir);
-        directions.push(dir2);
-        directions.push(dir3);
-        directions.push(dir4);
-
-        shoot(
-            &mut commands,
-            e,
-            directions,
-            &chaset,
-            transform,
-            pool.damage,
-            bullet_speed,
-        );
+    if pattern_timer.timer.tick(time.delta()).just_finished() {
+        for (e, transform, pool, pattern) in &bosses {
+            pattern_timer.timer = Timer::from_seconds(pattern.fire_rate, TimerMode::Repeating);
+            process_pattern(
+                &mut commands,
+                &e,
+                &charset,
+                transform,
+                pool,
+                *time,
+                pattern.bullet_speed,
+                pattern.rotation_speed,
+                pattern.spawn_count,
+                pattern.bullet_size,
+                pattern.bullet_glyph,
+            );
+        }
     }
 }
 
 fn boss_shoot_pattern_2(
     mut commands: Commands,
-    bosses: Query<(Entity, &Transform, &Pool), (With<Boss>, With<ShootPattern2>)>,
-    chaset: Res<CharsetAsset>,
+    bosses: Query<(Entity, &Transform, &Pool, &ShootPattern2), (With<Boss>, With<ShootPattern2>)>,
+    charset: Res<CharsetAsset>,
+    mut pattern_timer: ResMut<Pattern2Timer>,
+    time: Res<Time>,
 ) {
-    let bullet_speed: f32 = 100.0;
-    for (e, transform, pool) in &bosses {
-        let dir = transform.up().as_vec3();
-        let dir2 = transform.down().as_vec3();
-        let dir3 = transform.left().as_vec3();
-        let dir4 = transform.right().as_vec3();
-
-        let mut directions = Vec::new();
-        directions.push(dir);
-        directions.push(dir2);
-        directions.push(dir3);
-        directions.push(dir4);
-
-        shoot(
-            &mut commands,
-            e,
-            directions,
-            &chaset,
-            transform,
-            pool.damage,
-            bullet_speed,
-        );
+    if pattern_timer.timer.tick(time.delta()).just_finished() {
+        for (e, transform, pool, pattern) in &bosses {
+            pattern_timer.timer = Timer::from_seconds(pattern.fire_rate, TimerMode::Repeating);
+            process_pattern(
+                &mut commands,
+                &e,
+                &charset,
+                transform,
+                pool,
+                *time,
+                pattern.bullet_speed,
+                pattern.rotation_speed,
+                pattern.spawn_count,
+                pattern.bullet_size,
+                pattern.bullet_glyph,
+            );
+        }
     }
+}
+
+fn boss_shoot_pattern_3(
+    mut commands: Commands,
+    bosses: Query<(Entity, &Transform, &Pool, &ShootPattern3), (With<Boss>, With<ShootPattern3>)>,
+    time: Res<Time>,
+    charset: Res<CharsetAsset>,
+    mut pattern_timer: ResMut<Pattern3Timer>,
+) {
+    if pattern_timer.timer.tick(time.delta()).just_finished() {
+        for (e, transform, pool, pattern) in &bosses {
+            pattern_timer.timer = Timer::from_seconds(pattern.fire_rate, TimerMode::Repeating);
+
+            process_pattern(
+                &mut commands,
+                &e,
+                &charset,
+                transform,
+                pool,
+                *time,
+                pattern.bullet_speed,
+                pattern.rotation_speed,
+                pattern.spawn_count,
+                pattern.bullet_size,
+                pattern.bullet_glyph,
+            );
+        }
+    }
+}
+
+fn boss_shoot_pattern_4(
+    mut commands: Commands,
+    bosses: Query<(Entity, &Transform, &Pool, &ShootPattern4), (With<Boss>, With<ShootPattern4>)>,
+    time: Res<Time>,
+    charset: Res<CharsetAsset>,
+    mut pattern_timer: ResMut<Pattern4Timer>,
+) {
+    if pattern_timer.timer.tick(time.delta()).just_finished() {
+        for (e, transform, pool, pattern) in &bosses {
+            pattern_timer.timer = Timer::from_seconds(pattern.fire_rate, TimerMode::Repeating);
+
+            process_pattern(
+                &mut commands,
+                &e,
+                &charset,
+                transform,
+                pool,
+                *time,
+                pattern.bullet_speed,
+                pattern.rotation_speed,
+                pattern.spawn_count,
+                pattern.bullet_size,
+                pattern.bullet_glyph,
+            );
+        }
+    }
+}
+
+fn boss_shoot_pattern_direct_shoot(
+    mut commands: Commands,
+    bosses: Query<
+        (Entity, &Transform, &Pool, &ShootPatternDirectShoot),
+        (With<Boss>, With<ShootPatternDirectShoot>),
+    >,
+    time: Res<Time>,
+    charset: Res<CharsetAsset>,
+    mut pattern_timer: ResMut<ShootPatternDirectShootTimer>,
+    players: Query<&Transform, With<Player>>,
+) {
+    if pattern_timer.timer.tick(time.delta()).just_finished() {
+        for (e, transform, pool, pattern) in &bosses {
+            pattern_timer.timer = Timer::from_seconds(pattern.fire_rate, TimerMode::Repeating);
+
+            for player_transform in &players {
+                let mut directions = Vec::new();
+                for _ in 0..pattern.spawn_count {
+                    let dir = (player_transform.translation - transform.translation).normalize();
+                    directions.push(dir);
+                }
+
+                shoot(
+                    &mut &mut commands,
+                    e,
+                    directions,
+                    &charset,
+                    transform,
+                    pool.damage,
+                    pattern.bullet_speed,
+                    pattern.bullet_size,
+                    pattern.bullet_glyph,
+                );
+            }
+        }
+    }
+}
+
+fn process_pattern(
+    commands: &mut Commands,
+    e: &Entity,
+    charset: &CharsetAsset,
+    transform: &Transform,
+    pool: &Pool,
+    time: Time,
+    bullet_speed: f32,
+    rotation_speed: f32,
+    spawn_count: i32,
+    bullet_size: f32,
+    bullet_glyph: usize,
+) {
+    let rotation = Quat::from_rotation_z(time.elapsed_secs() * rotation_speed);
+
+    let mut directions = Vec::new();
+
+    for i in 0..spawn_count {
+        let angle = (i as f32 / spawn_count as f32) * 2.0 * std::f32::consts::PI;
+        let dir = rotation * Vec3::new(angle.cos(), angle.sin(), 0.0);
+        directions.push(dir);
+    }
+
+    shoot(
+        commands,
+        *e,
+        directions,
+        charset,
+        transform,
+        pool.damage,
+        bullet_speed,
+        bullet_size,
+        bullet_glyph,
+    );
 }
 
 fn shoot(
@@ -180,6 +402,8 @@ fn shoot(
     transform: &Transform,
     damage: f32,
     bullet_speed: f32,
+    size: f32,
+    bullet_glyph: usize,
 ) {
     for dir in dir.iter() {
         spawn_bullet(
@@ -190,6 +414,53 @@ fn shoot(
             entity,
             bullet_speed,
             damage,
+            size,
+            bullet_glyph,
         );
     }
+}
+
+fn boss_number_1(commands: &mut Commands, e: Entity) {
+    commands.entity(e).insert((
+        ShootPattern1 {
+            bullet_speed: 100.,
+            spawn_count: 4,
+            rotation_speed: 2.,
+            fire_rate: 0.1,
+            bullet_size: 1.0,
+            bullet_glyph: '#' as usize,
+        },
+        ShootPattern2 {
+            bullet_speed: 50.,
+            spawn_count: 32,
+            rotation_speed: 0.,
+            fire_rate: 2.0,
+            bullet_size: 2.0,
+            bullet_glyph: '*' as usize,
+        },
+        ShootPattern3 {
+            bullet_speed: 100.,
+            spawn_count: 8,
+            rotation_speed: 0.,
+            fire_rate: 0.5,
+            bullet_size: 1.0,
+            bullet_glyph: '*' as usize,
+        },
+        ShootPattern4 {
+            bullet_speed: 100.,
+            spawn_count: 4,
+            rotation_speed: -2.,
+            fire_rate: 0.1,
+            bullet_size: 1.0,
+            bullet_glyph: '#' as usize,
+        },
+        ShootPatternDirectShoot {
+            bullet_speed: 200.,
+            spawn_count: 1,
+            fire_rate: 1.,
+            bullet_size: 3.0,
+            bullet_glyph: '&' as usize,
+            bullet_frequency: 0.2 as u64,
+        },
+    ));
 }

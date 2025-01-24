@@ -15,7 +15,7 @@ pub struct ApplyMove {
 #[derive(Component)]
 pub struct Player;
 
-const SPEED: f32 = 300.0;
+const SPEED: f32 = 250.0;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, movement.run_if(in_state(GameState::Playing)));
@@ -40,7 +40,7 @@ pub fn spawn_player(commands: &mut Commands, chaset: &CharsetAsset) {
             health: 10.,
             max_health: 10.,
             damage: 2.,
-            god_mode: false,
+            god_mode: true,
         },
         GamePlayEntity,
     ));

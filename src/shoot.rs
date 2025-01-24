@@ -64,27 +64,13 @@ fn shoot(
                 shooter.entity,
                 PLAYER_BULLET_SPEED,
                 pool.damage,
+                1.0,
+                '*' as usize,
             );
 
             commands.entity(e).remove::<WantToShoot>();
         }
     }
-
-    // for (e, transform, shooter, pool) in &shooters_bosses {
-    //     for dir in shooter.dir.iter() {
-    //         spawn_bullet(
-    //             &mut commands,
-    //             &chaset,
-    //             *dir,
-    //             transform.translation,
-    //             shooter.entity,
-    //             BULLET_SPEED,
-    //             pool.damage,
-    //         );
-
-    //         commands.entity(e).remove::<WantToShoot>();
-    //     }
-    // }
 }
 
 pub fn spawn_bullet(
@@ -95,18 +81,24 @@ pub fn spawn_bullet(
     owner: Entity,
     speed: f32,
     damage: f32,
+    size: f32,
+    glyph: usize,
 ) {
     commands.spawn((
         Sprite {
             image: chaset.texture.clone(),
             texture_atlas: Some(TextureAtlas {
                 layout: chaset.atlas.clone(),
-                index: '*' as usize,
+                index: glyph,
             }),
 
             ..Default::default()
         },
-        Transform::from_xyz(position.x, position.y, position.z),
+        Transform {
+            translation: Vec3::new(position.x, position.y, position.z),
+            rotation: Quat::IDENTITY,
+            scale: Vec3::new(size, size, 0.0),
+        },
         Bullet {
             dir,
             lifetime: 10.0,
