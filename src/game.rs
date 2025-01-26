@@ -1,10 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::{
-    assets::CharsetAsset,
-    enemies::spawn_boss,
-    player::spawn_player,
-};
+use crate::{assets::CharsetAsset, enemies::spawn_boss, player::spawn_player};
 
 #[derive(Component)]
 pub struct GamePlayEntity;
@@ -27,6 +23,7 @@ pub enum GameState {
     GameOver,
     NextLevel,
     WinGame,
+    FinishedLevel,
 }
 
 #[derive(Resource, Debug)]
