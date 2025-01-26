@@ -24,7 +24,7 @@ use bevy::{
         RenderApp,
     },
 };
-const SHADER_ASSET_PATH: &str = "shaders/scanlines.wgsl";
+const SHADER_ASSET_PATH: &str = "shaders/post_processing.wgsl";
 
 /// It is generally encouraged to set up post processing effects as a plugin
 pub struct PostProcessPlugin;

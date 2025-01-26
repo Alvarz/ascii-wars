@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-use crate::postprocessing::example::PostProcessSettings;
+use crate::postprocessing::scanlines::ScanlineSettings;
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -14,7 +14,7 @@ fn initialize_camera(mut commands: Commands, window_query: Query<&Window, With<P
     commands.spawn((
         MainCamera,
         Camera2d {},
-        PostProcessSettings {
+        ScanlineSettings {
             line_thickness: 1.0,
             intensity: 1.0,
             ..default()
