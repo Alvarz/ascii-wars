@@ -182,7 +182,7 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
                 image: chaset.texture.clone(),
                 texture_atlas: Some(TextureAtlas {
                     layout: chaset.atlas.clone(),
-                    index: BOSSES_GLYPH[level],
+                    index: BOSSES_GLYPH[level - 1],
                 }),
                 ..Default::default()
             },
@@ -204,8 +204,17 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
         .id();
 
     match level {
-        1 => boss_number_1(commands, e),
-        _ => boss_number_1(commands, e),
+        // 1 => the_sentinel(commands, e),
+        // 2 => the_hoarder(commands, e),
+        // 3 => the_watcher(commands, e),
+        // 4 => the_infernal_imp(commands, e),
+        // 5 => the_spiral_beast(commands, e),
+        // 6 => the_guardian_order(commands, e),
+        // 7 => the_swarm_king(commands, e),
+        // 8 => the_celestial_tyrant(commands, e),
+        // 9 => the_clockwork_leviathan(commands, e),
+        // 10 => the_chaos_reaper(commands, e),
+        _ => the_spiral_beast(commands, e),
     };
 }
 
@@ -419,7 +428,7 @@ fn shoot(
     }
 }
 
-fn boss_number_1(commands: &mut Commands, e: Entity) {
+fn the_sentinel(commands: &mut Commands, e: Entity) {
     commands.entity(e).insert((
         ShootPattern1 {
             bullet_speed: 100.,
@@ -436,6 +445,85 @@ fn boss_number_1(commands: &mut Commands, e: Entity) {
             bullet_size: 3.0,
             bullet_glyph: '|' as usize,
             bullet_frequency: 0.2 as u64,
+        },
+    ));
+}
+
+fn the_watcher(commands: &mut Commands, e: Entity) {
+    commands.entity(e).insert((
+        ShootPattern1 {
+            bullet_speed: 100.,
+            spawn_count: 64,
+            rotation_speed: 0.,
+            fire_rate: 1.,
+            bullet_size: 1.0,
+            bullet_glyph: 'o' as usize,
+        },
+        ShootPatternDirectShoot {
+            bullet_speed: 300.,
+            spawn_count: 1,
+            fire_rate: 3.,
+            bullet_size: 3.0,
+            bullet_glyph: '|' as usize,
+            bullet_frequency: 0.2 as u64,
+        },
+    ));
+}
+
+fn the_infernal_imp(commands: &mut Commands, e: Entity) {
+    commands.entity(e).insert((
+        ShootPattern1 {
+            bullet_speed: 300.,
+            spawn_count: 4,
+            rotation_speed: 0.3,
+            fire_rate: 0.,
+            bullet_size: 1.0,
+            bullet_glyph: '~' as usize,
+        },
+        ShootPatternDirectShoot {
+            bullet_speed: 250.,
+            spawn_count: 1,
+            fire_rate: 2.,
+            bullet_size: 2.0,
+            bullet_glyph: 'O' as usize,
+            bullet_frequency: 0.2 as u64,
+        },
+        ShootPattern2 {
+            bullet_speed: 100.,
+            spawn_count: 32,
+            rotation_speed: 0.,
+            fire_rate: 2.,
+            bullet_size: 1.0,
+            bullet_glyph: 'o' as usize,
+        },
+    ));
+}
+
+fn the_spiral_beast(commands: &mut Commands, e: Entity) {
+    commands.entity(e).insert((
+        ShootPattern1 {
+            bullet_speed: 250.,
+            spawn_count: 16,
+            rotation_speed: 0.8,
+            fire_rate: 0.2,
+            bullet_size: 1.5,
+            bullet_glyph: '0' as usize,
+        },
+        ShootPattern2 {
+            bullet_speed: 100.,
+            spawn_count: 6,
+            rotation_speed: 0.8,
+            fire_rate: 0.05,
+            bullet_size: 1.0,
+            bullet_glyph: 'x' as usize,
+        },
+        ShootPattern3 {
+            bullet_speed: 80.,
+            spawn_count: 64,
+            rotation_speed: 0.,
+            fire_rate: 5.,
+            bullet_size: 2.0,
+            bullet_glyph: '|' as usize,
         },
     ));
 }
