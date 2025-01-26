@@ -7,6 +7,7 @@ mod enemies;
 mod game;
 mod input;
 mod player;
+mod postprocessing;
 mod shoot;
 mod ui;
 
@@ -24,6 +25,7 @@ impl Plugin for AppPlugin {
             shoot::plugin,
             enemies::plugin,
             ui::plugin,
+            postprocessing::plugin,
         ));
 
         // // Enable dev tools for dev builds.
