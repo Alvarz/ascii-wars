@@ -157,7 +157,7 @@ fn check_for_collisions(
                         if e == *player {
                             next_state.set(GameState::GameOver);
                         } else if e == *boss {
-                            next_state.set(GameState::NextLevel);
+                            next_state.set(GameState::FinishedLevel);
                         }
                     }
                 }
