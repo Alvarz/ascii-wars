@@ -35,7 +35,7 @@ pub struct GameStatus {
 pub(super) fn plugin(app: &mut App) {
     app.insert_resource(GameStatus {
         level: 0,
-        max_level: 3,
+        max_level: 10,
     });
 
     app.add_systems(OnEnter(GameState::GameOver), clean_up_level);
