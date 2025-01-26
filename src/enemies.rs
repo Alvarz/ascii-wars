@@ -214,7 +214,7 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
         // 8 => the_celestial_tyrant(commands, e),
         // 9 => the_clockwork_leviathan(commands, e),
         // 10 => the_chaos_reaper(commands, e),
-        _ => the_spiral_beast(commands, e),
+        _ => the_guardian_order(commands, e),
     };
 }
 
@@ -524,6 +524,43 @@ fn the_spiral_beast(commands: &mut Commands, e: Entity) {
             fire_rate: 5.,
             bullet_size: 2.0,
             bullet_glyph: '|' as usize,
+        },
+    ));
+}
+
+fn the_guardian_order(commands: &mut Commands, e: Entity) {
+    commands.entity(e).insert((
+        ShootPattern1 {
+            bullet_speed: 300.,
+            spawn_count: 4,
+            rotation_speed: 0.,
+            fire_rate: 0.4,
+            bullet_size: 1.5,
+            bullet_glyph: 'x' as usize,
+        },
+        ShootPatternDirectShoot {
+            bullet_speed: 80.,
+            spawn_count: 1,
+            fire_rate: 2.,
+            bullet_size: 2.0,
+            bullet_glyph: 'o' as usize,
+            bullet_frequency: 0.2 as u64,
+        },
+        ShootPattern2 {
+            bullet_speed: 300.,
+            spawn_count: 8,
+            rotation_speed: 0.3,
+            fire_rate: 0.1,
+            bullet_size: 1.,
+            bullet_glyph: '|' as usize,
+        },
+        ShootPattern3 {
+            bullet_speed: 50.,
+            spawn_count: 64,
+            rotation_speed: 0.3,
+            fire_rate: 3.5,
+            bullet_size: 1.,
+            bullet_glyph: '#' as usize,
         },
     ));
 }
