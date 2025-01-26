@@ -92,7 +92,7 @@ struct Pattern4Timer {
 struct ShootPatternDirectShootTimer {
     timer: Timer,
 }
-const BOSSES_GLYPH: [usize; 11] = [
+const BOSSES_GLYPH: [usize; 10] = [
     '#' as usize, // The Sentinel
     '$' as usize, // The Hoarder
     '%' as usize, //  The Watcher
@@ -424,41 +424,17 @@ fn boss_number_1(commands: &mut Commands, e: Entity) {
         ShootPattern1 {
             bullet_speed: 100.,
             spawn_count: 4,
-            rotation_speed: 2.,
-            fire_rate: 0.1,
-            bullet_size: 1.0,
-            bullet_glyph: '#' as usize,
-        },
-        ShootPattern2 {
-            bullet_speed: 50.,
-            spawn_count: 32,
             rotation_speed: 0.,
-            fire_rate: 2.0,
-            bullet_size: 2.0,
-            bullet_glyph: '*' as usize,
-        },
-        ShootPattern3 {
-            bullet_speed: 100.,
-            spawn_count: 8,
-            rotation_speed: 0.,
-            fire_rate: 0.5,
-            bullet_size: 1.0,
-            bullet_glyph: '*' as usize,
-        },
-        ShootPattern4 {
-            bullet_speed: 100.,
-            spawn_count: 4,
-            rotation_speed: -2.,
-            fire_rate: 0.1,
-            bullet_size: 1.0,
-            bullet_glyph: '#' as usize,
+            fire_rate: 0.8,
+            bullet_size: 3.0,
+            bullet_glyph: '.' as usize,
         },
         ShootPatternDirectShoot {
-            bullet_speed: 200.,
+            bullet_speed: 100.,
             spawn_count: 1,
             fire_rate: 1.,
             bullet_size: 3.0,
-            bullet_glyph: '&' as usize,
+            bullet_glyph: '|' as usize,
             bullet_frequency: 0.2 as u64,
         },
     ));
