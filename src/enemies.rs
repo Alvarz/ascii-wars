@@ -93,17 +93,16 @@ struct ShootPatternDirectShootTimer {
     timer: Timer,
 }
 const BOSSES_GLYPH: [usize; 11] = [
-    'a' as usize,
-    'A' as usize,
-    'B' as usize,
-    'C' as usize,
-    'D' as usize,
-    'E' as usize,
-    'F' as usize,
-    'G' as usize,
-    'H' as usize,
-    'I' as usize,
-    'J' as usize,
+    '#' as usize, // The Sentinel
+    '$' as usize, // The Hoarder
+    '%' as usize, //  The Watcher
+    '@' as usize, // The Infernal Imp
+    '&' as usize, // The Spiral Beast
+    '+' as usize, // The Guardian of Order
+    '*' as usize, // The Swarm King
+    'O' as usize, // The Celestial Tyrant
+    '=' as usize, // The Clockwork Leviathan
+    '~' as usize, // The Chaos Reaper
 ];
 
 pub(super) fn plugin(app: &mut App) {
