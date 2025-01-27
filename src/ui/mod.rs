@@ -6,7 +6,7 @@ mod hud;
 mod main_menu;
 mod pause_menu;
 mod ui_commons;
-mod ui_style;
+pub mod ui_style;
 mod winner_page;
 
 pub(super) fn plugin(app: &mut App) {

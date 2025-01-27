@@ -32,6 +32,6 @@ fn main() {
                 }),
         ) // fallback to nearest sampling
         .add_plugins(AppPlugin)
-        // .insert_resource(ClearColor(Color::srgb(0.0, 0.0, 0.0))) // color of the screen
+        .insert_resource(ClearColor(Color::srgb(0.10, 0.10, 0.10))) // color of the screen
         .run();
 }
