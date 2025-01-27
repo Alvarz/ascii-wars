@@ -5,7 +5,7 @@ use boss_rush::AppPlugin;
 pub const SCREEN_WIDTH: i32 = 142;
 pub const SCREEN_HEIGHT: i32 = 80;
 // pub const UI_HEIGHT: i32 = 10;
-pub const PROJECT_NAME: &str = "Roguelike Game";
+pub const PROJECT_NAME: &str = "ASCII Wars!";
 
 fn main() {
     App::new()
@@ -23,6 +23,6 @@ fn main() {
                 }),
         ) // fallback to nearest sampling
         .add_plugins(AppPlugin)
-        .insert_resource(ClearColor(Color::srgb(0.0, 0.0, 0.0))) // color of the screen
+        // .insert_resource(ClearColor(Color::srgb(0.0, 0.0, 0.0))) // color of the screen
         .run();
 }

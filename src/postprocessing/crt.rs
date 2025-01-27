@@ -260,7 +260,7 @@ impl FromWorld for PostProcessPipeline {
                     // It can be anything as long as it matches here and in the shader.
                     entry_point: "fragment".into(),
                     targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::bevy_default(),
+                        format: TextureFormat::Rgba16Float,
                         blend: None,
                         write_mask: ColorWrites::ALL,
                     })],

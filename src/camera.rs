@@ -14,12 +14,16 @@ fn initialize_camera(mut commands: Commands, window_query: Query<&Window, With<P
     commands.spawn((
         MainCamera,
         Camera2d {},
+        Camera {
+            hdr: true,
+            ..Default::default()
+        },
         CrtSettings {
-            line_thickness: 0.25,
+            line_thickness: 0.30,
             intensity: 0.2,
             curvature: 0.1,
-            aberration_offset: 0.002,
-            vignette_strength: 0.25,
+            aberration_offset: 0.001,
+            vignette_strength: 25.0,
         },
         // ChromaticAberration {
         //     intensity: 0.02,
