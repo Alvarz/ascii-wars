@@ -3,6 +3,7 @@
 use bevy::{
     core_pipeline::{
         core_2d::graph::{Core2d, Node2d},
+        core_3d::graph::{Core3d, Node3d},
         fullscreen_vertex_shader::fullscreen_shader_vertex_state,
     },
     ecs::query::QueryItem,
@@ -79,6 +80,22 @@ impl Plugin for CrtPlugin {
                     Node2d::Tonemapping,
                     PostProcessLabel,
                     Node2d::EndMainPassPostProcessing,
+                ),
+            )
+            .add_render_graph_node::<ViewNodeRunner<PostProcessNode>>(
+                // Specify the label of the graph, in this case we want the graph for 2d
+                Core3d,
+                // It also needs the label of the node
+                PostProcessLabel,
+            )
+            .add_render_graph_edges(
+                Core3d,
+                // Specify the node ordering.
+                // This will automatically create all required node edges to enforce the given ordering.
+                (
+                    Node3d::Tonemapping,
+                    PostProcessLabel,
+                    Node3d::EndMainPassPostProcessing,
                 ),
             );
     }
