@@ -1,10 +1,13 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, window::WindowMode};
 
 use boss_rush::AppPlugin;
-
-pub const SCREEN_WIDTH: i32 = 142;
-pub const SCREEN_HEIGHT: i32 = 80;
-// pub const UI_HEIGHT: i32 = 10;
+// 16:10
+const SCREEN_WIDTH: i32 = 1680;
+const SCREEN_HEIGHT: i32 = 1050;
+// 16:9
+// pub const SCREEN_WIDTH: i32 = 1920;
+// pub const SCREEN_HEIGHT: i32 = 1080;
+const RESOLUTION_SCALE: f32 = 1.0;
 pub const PROJECT_NAME: &str = "ASCII Wars!";
 
 fn main() {
@@ -14,8 +17,14 @@ fn main() {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
+                        resizable: false,
+                        present_mode: bevy::window::PresentMode::AutoVsync,
+                        // mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
                         title: PROJECT_NAME.to_string(),
-                        resolution: (SCREEN_WIDTH as f32 * 10.0, SCREEN_HEIGHT as f32 * 10.0)
+                        resolution: (
+                            SCREEN_WIDTH as f32 * RESOLUTION_SCALE,
+                            SCREEN_HEIGHT as f32 * RESOLUTION_SCALE,
+                        )
                             .into(),
                         ..Default::default()
                     }),
@@ -23,6 +32,6 @@ fn main() {
                 }),
         ) // fallback to nearest sampling
         .add_plugins(AppPlugin)
-        // .insert_resource(ClearColor(Color::srgb(0.0, 0.0, 0.0))) // color of the screen
+        .insert_resource(ClearColor(Color::srgb(0.10, 0.10, 0.10))) // color of the screen
         .run();
 }

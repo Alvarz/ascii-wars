@@ -38,7 +38,6 @@ pub fn spawn_box(commands: &mut Commands, parent: Entity, width: Val, height: Va
                 height,
                 border: UiRect::all(Val::Px(2.)),
                 align_items: AlignItems::Center, // align horizontal
-                // justify_content: JustifyContent::Center, // align vertical
                 ..default()
             },
             BackgroundColor(BOX_BG_COLOR),
@@ -52,8 +51,6 @@ pub fn spawn_box(commands: &mut Commands, parent: Entity, width: Val, height: Va
 }
 
 pub fn spawn_text(commands: &mut Commands, parent: Entity, text: &str, font_size: f32) -> Entity {
-    //     let text = "ASCII Wars!";
-
     let child = commands
         .spawn((
             Text::new(text),
@@ -91,7 +88,7 @@ pub fn spawn_button<T: Bundle>(
                 width: Val::Percent(60.),
                 height: Val::Percent(20.),
 
-                border: UiRect::all(Val::Px(2.0)),
+                border: UiRect::all(Val::Px(2.)),
                 // horizontally center child text
                 justify_content: JustifyContent::Center,
                 // vertically center child text

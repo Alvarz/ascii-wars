@@ -25,7 +25,10 @@ pub(super) fn plugin(app: &mut App) {
         confine_player_movement.run_if(in_state(GameState::Playing)),
     );
 }
-pub fn spawn_player(commands: &mut Commands, chaset: &CharsetAsset) {
+pub fn spawn_player(commands: &mut Commands, chaset: &CharsetAsset, window: &Window) {
+    let spawn_pos_x = window.width() * 0.5;
+    let spawn_pos_y = window.height() * 0.5;
+
     commands.spawn((
         Sprite {
             image: chaset.texture.clone(),
@@ -34,6 +37,11 @@ pub fn spawn_player(commands: &mut Commands, chaset: &CharsetAsset) {
                 index: '>' as usize,
             }),
             ..Default::default()
+        },
+        Transform {
+            translation: Vec3::new(spawn_pos_x, spawn_pos_y - 300., 0.),
+            rotation: Quat::IDENTITY,
+            scale: Vec3::new(1.3, 1.3, 0.),
         },
         Player {},
         Pool {

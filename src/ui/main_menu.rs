@@ -4,8 +4,8 @@ use crate::ui::ui_commons::{
     exit_button_system, spawn_box, spawn_button, spawn_container, spawn_text, ExitButton,
 };
 use crate::ui::ui_style::{
-    BOX_BORDER_COLOR, HOVERED_BUTTON, HOVER_TEXT_COLOR,
-    MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
+    BOX_BORDER_COLOR, HOVERED_BUTTON, HOVER_TEXT_COLOR, MAIN_TEXT_COLOR, NORMAL_BUTTON,
+    PRESSED_BUTTON,
 };
 use crate::GameState;
 
@@ -38,7 +38,7 @@ fn main_menu(mut commands: Commands) {
         &mut commands,
         container,
         Val::Percent(60.),
-        Val::Percent(60.),
+        Val::Percent(80.),
     );
     spawn_text(&mut commands, menu_box, "ASCII Wars!", 50.0);
     spawn_button(&mut commands, menu_box, "Play".to_string(), PlayButton, 32.);

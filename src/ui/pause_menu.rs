@@ -4,8 +4,8 @@ use crate::ui::ui_commons::{
     exit_button_system, spawn_box, spawn_button, spawn_container, spawn_text, ExitButton,
 };
 use crate::ui::ui_style::{
-    BOX_BORDER_COLOR, HOVERED_BUTTON, HOVER_TEXT_COLOR,
-    MAIN_TEXT_COLOR, NORMAL_BUTTON, PRESSED_BUTTON,
+    BOX_BORDER_COLOR, HOVERED_BUTTON, HOVER_TEXT_COLOR, MAIN_TEXT_COLOR, NORMAL_BUTTON,
+    PRESSED_BUTTON,
 };
 use crate::GameState;
 
@@ -42,15 +42,15 @@ fn main_menu(mut commands: Commands) {
         Val::Percent(60.),
     );
 
-    spawn_text(&mut commands, menu_box, "Pause!", 20.0);
+    spawn_text(&mut commands, menu_box, "Pause!", 25.0);
     spawn_button(
         &mut commands,
         menu_box,
         "Continue".to_string(),
         ContinueButton,
-        18.,
+        20.,
     );
-    spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton, 18.);
+    spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton, 20.);
 }
 
 fn clear_pause_menu(mut commands: Commands, menu: Res<PauseMenu>) {
