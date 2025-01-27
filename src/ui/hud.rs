@@ -92,7 +92,7 @@ fn spawn_text(commands: &mut Commands, parent: Entity) {
             Node {
                 margin: UiRect {
                     left: Val::Percent(20.),
-                    right: Val::Percent(48.),
+                    right: Val::Percent(45.),
                     top: Val::Percent(1.),
                     bottom: Val::Percent(0.),
                 },
