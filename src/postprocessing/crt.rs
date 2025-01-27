@@ -24,7 +24,6 @@ use bevy::{
         view::ViewTarget,
         RenderApp,
     },
-    ui::UiPassNode,
 };
 const SHADER_ASSET_PATH: &str = "shaders/crt.wgsl";
 

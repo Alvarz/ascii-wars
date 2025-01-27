@@ -216,8 +216,8 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
             Boss {},
             // Direction::Up,
             Pool {
-                health: 10000.,
-                max_health: 10000.,
+                health: 1500.,
+                max_health: 1500.,
                 damage: 2.,
                 god_mode: false,
             },
