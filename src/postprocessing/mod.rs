@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 
-pub mod example;
-pub mod scanlines;
+pub mod crt;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((scanlines::ScanlinePlugin));
+    app.add_plugins(crt::CrtPlugin);
 }

@@ -23,26 +23,27 @@ use bevy::{
         view::ViewTarget,
         RenderApp,
     },
+    ui::UiPassNode,
 };
-const SHADER_ASSET_PATH: &str = "shaders/scanlines.wgsl";
+const SHADER_ASSET_PATH: &str = "shaders/crt.wgsl";
 
 /// It is generally encouraged to set up post processing effects as a plugin
-pub struct ScanlinePlugin;
+pub struct CrtPlugin;
 
-impl Plugin for ScanlinePlugin {
+impl Plugin for CrtPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             // The settings will be a component that lives in the main world but will
             // be extracted to the render world every frame.
             // This makes it possible to control the effect from the main world.
             // This plugin will take care of extracting it automatically.
-            // It's important to derive [`ExtractComponent`] on [`PostProcessingSettings`]
+            // It's important to derive [`ExtractComponent`] on [`CrtSettings`]
             // for this plugin to work correctly.
-            ExtractComponentPlugin::<ScanlineSettings>::default(),
+            ExtractComponentPlugin::<CrtSettings>::default(),
             // The settings will also be the data used in the shader.
             // This plugin will prepare the component for the GPU by creating a uniform buffer
             // and writing the data to that buffer every frame.
-            UniformComponentPlugin::<ScanlineSettings>::default(),
+            UniformComponentPlugin::<CrtSettings>::default(),
         ));
 
         // We need to get the render app from the main app
@@ -109,11 +110,11 @@ impl ViewNode for PostProcessNode {
     // This query will only run on the view entity
     type ViewQuery = (
         &'static ViewTarget,
-        // This makes sure the node only runs on cameras with the PostProcessSettings component
-        &'static ScanlineSettings,
+        // This makes sure the node only runs on cameras with the CrtSettings component
+        &'static CrtSettings,
         // As there could be multiple post processing components sent to the GPU (one per camera),
         // we need to get the index of the one that is associated with the current view.
-        &'static DynamicUniformIndex<ScanlineSettings>,
+        &'static DynamicUniformIndex<CrtSettings>,
     );
 
     // Runs the node logic
@@ -146,7 +147,7 @@ impl ViewNode for PostProcessNode {
         };
 
         // Get the settings uniform binding
-        let settings_uniforms = world.resource::<ComponentUniforms<ScanlineSettings>>();
+        let settings_uniforms = world.resource::<ComponentUniforms<CrtSettings>>();
         let Some(settings_binding) = settings_uniforms.uniforms().binding() else {
             return Ok(());
         };
@@ -233,7 +234,7 @@ impl FromWorld for PostProcessPipeline {
                     // The sampler that will be used to sample the screen texture
                     sampler(SamplerBindingType::Filtering),
                     // The settings uniform that will control the effect
-                    uniform_buffer::<ScanlineSettings>(true),
+                    uniform_buffer::<CrtSettings>(true),
                 ),
             ),
         );
@@ -283,9 +284,13 @@ impl FromWorld for PostProcessPipeline {
 
 // This is the component that will get passed to the shader
 #[derive(Component, Default, Clone, Copy, ExtractComponent, ShaderType)]
-pub struct ScanlineSettings {
+pub struct CrtSettings {
     pub intensity: f32,
-    pub line_thickness: f32, // Thickness of the scanlines
+    pub line_thickness: f32,    // Thickness of the scanlines
+    pub curvature: f32,         // Amount of screen curvature
+    pub aberration_offset: f32, // Offset for RGB channel shift (color aberration)
+    pub vignette_strength: f32, // Strength of vignette effect
+    //     pub line_thickness: f32, // Thickness of the scanlines
 
     // WebGL2 structs must be 16 byte aligned.
     #[cfg(feature = "webgl2")]

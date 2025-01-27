@@ -1,6 +1,6 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::{core_pipeline::post_process::ChromaticAberration, prelude::*, window::PrimaryWindow};
 
-use crate::postprocessing::scanlines::ScanlineSettings;
+use crate::postprocessing::crt::CrtSettings;
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -14,11 +14,17 @@ fn initialize_camera(mut commands: Commands, window_query: Query<&Window, With<P
     commands.spawn((
         MainCamera,
         Camera2d {},
-        ScanlineSettings {
-            line_thickness: 1.0,
-            intensity: 1.0,
-            ..default()
+        CrtSettings {
+            line_thickness: 0.25,
+            intensity: 0.2,
+            curvature: 0.1,
+            aberration_offset: 0.002,
+            vignette_strength: 0.25,
         },
+        // ChromaticAberration {
+        //     intensity: 0.02,
+        //     ..default()
+        // },
         Transform::from_xyz(window.width() * 0.5, window.height() * 0.5, 0.0),
     ));
 }
