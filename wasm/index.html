@@ -1,0 +1,36 @@
+<html>
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: none;
+    }
+
+    #main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      width: calc(min(100vw, 1680 / 1050 * 100vh));
+    }
+  </style>
+</head>
+
+<body>
+  <div id="main">
+    <canvas id="canvas" width="1680" height="1050"></canvas>
+  </div>
+  <script src="./blob.js"></script>
+  <script>
+    window.addEventListener("load", async () => {
+      await wasm_bindgen("./blob.wasm");
+    });
+  </script>
+</body>
+
+</html>

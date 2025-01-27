@@ -19,7 +19,7 @@ fn main() {
                     primary_window: Some(Window {
                         resizable: false,
                         present_mode: bevy::window::PresentMode::AutoVsync,
-                        // mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
+                        mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
                         title: PROJECT_NAME.to_string(),
                         resolution: (
                             SCREEN_WIDTH as f32 * RESOLUTION_SCALE,

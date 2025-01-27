@@ -1,4 +1,3 @@
-
 use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
@@ -217,8 +216,8 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
             Boss {},
             // Direction::Up,
             Pool {
-                health: 1000.,
-                max_health: 1000.,
+                health: 10000.,
+                max_health: 10000.,
                 damage: 2.,
                 god_mode: false,
             },
