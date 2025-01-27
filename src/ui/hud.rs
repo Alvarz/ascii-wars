@@ -9,9 +9,7 @@ use crate::{
 };
 
 #[derive(Resource)]
-pub struct Hud {
-    entity: Entity,
-}
+pub struct Hud;
 
 #[derive(Component)]
 pub struct HealthBar;
@@ -26,19 +24,13 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         update_level_label.run_if(in_state(GameState::Playing)),
     );
-    //     app.add_systems(OnEnter(GameState::MainMenu), clear_hud);
 }
 
 fn hud(mut commands: Commands) {
     let container = spawn_container(&mut commands);
-    commands.insert_resource(Hud { entity: container });
+    commands.insert_resource(Hud);
     let _ = spawn_health_bar(&mut commands, container);
     spawn_text(&mut commands, container);
-}
-
-fn clear_hud(mut commands: Commands, menu: Res<Hud>) {
-    commands.entity(menu.entity).despawn_recursive();
-    commands.remove_resource::<Hud>();
 }
 
 fn spawn_health_bar(commands: &mut Commands, parent: Entity) -> Entity {
@@ -116,7 +108,6 @@ fn spawn_text(commands: &mut Commands, parent: Entity) {
 fn check_health(
     pool_query: Query<&Pool, With<Player>>,
     health_bar_query: Query<(&Node, &Children), With<HealthBar>>,
-    // text_query: Query<(&Node, &Children), (With<Text>)>,
     mut health_bar_content_query: Query<&mut Node, Without<HealthBar>>,
 ) {
     for (_, children) in &health_bar_query {
@@ -136,10 +127,4 @@ fn update_level_label(
     for mut label in &mut level_label_text {
         *label = Text::new(format!("level: {:?}", game_status.level));
     }
-
-    // let mut level_label = level_label_text.single_mut();
-
-    // for mut text in &mut level_label_text {
-    //     *text = Text::new(format!("level: {:?}", game_status.level))
-    // }
 }

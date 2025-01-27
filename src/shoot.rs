@@ -7,7 +7,7 @@ use crate::{
     assets::CharsetAsset,
     camera::MainCamera,
     enemies::Boss,
-    game::{GamePlayEntity, Pool},
+    game::{GamePlayEntity, GameStatus, Pool},
     player::Player,
     GameState,
 };
@@ -134,6 +134,7 @@ fn check_for_collisions(
     boss: Single<Entity, (With<Boss>, Without<Player>)>,
     camera: Single<(Entity, &MainCamera)>,
     mut next_state: ResMut<NextState<GameState>>,
+    game_status: Res<GameStatus>,
 ) {
     for (bullet_e, bullet_transform, bullet) in &bullets {
         for (e, transform, mut pool) in &mut no_bullets {
@@ -157,6 +158,10 @@ fn check_for_collisions(
                         if e == *player {
                             next_state.set(GameState::GameOver);
                         } else if e == *boss {
+                            if game_status.level >= game_status.max_level {
+                                next_state.set(GameState::NextLevel);
+                                return;
+                            }
                             next_state.set(GameState::FinishedLevel);
                         }
                     }

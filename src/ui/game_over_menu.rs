@@ -36,15 +36,15 @@ fn game_over_menu(mut commands: Commands) {
         Val::Percent(60.),
     );
 
-    spawn_text(&mut commands, menu_box, "Game Over!", 20.0);
+    spawn_text(&mut commands, menu_box, "Game Over!", 25.0);
     spawn_button(
         &mut commands,
         menu_box,
         "Play Again".to_string(),
         PlayAgainButton,
-        18.,
+        20.,
     );
-    spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton, 18.);
+    spawn_button(&mut commands, menu_box, "Exit".to_string(), ExitButton, 20.);
 }
 
 fn clear_game_over_menu(mut commands: Commands, menu: Res<PauseMenu>) {

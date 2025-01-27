@@ -33,16 +33,16 @@ fn finished_level(mut commands: Commands) {
         &mut commands,
         container,
         Val::Percent(40.),
-        Val::Percent(60.),
+        Val::Percent(40.),
     );
 
-    spawn_text(&mut commands, menu_box, "You Won!", 20.0);
+    spawn_text(&mut commands, menu_box, "Completed!", 25.0);
     spawn_button(
         &mut commands,
         menu_box,
-        "Continue Next Level".to_string(),
+        "Continue to next level".to_string(),
         NextLevelButton,
-        18.,
+        20.,
     );
 }
 
@@ -84,7 +84,6 @@ fn continue_button_system(
                 *color = NORMAL_BUTTON.into();
                 border_color.0 = BOX_BORDER_COLOR.into();
                 *text_color = MAIN_TEXT_COLOR.into()
-                // border_color.0 = NORMAL_BUTTON.into();
             }
         }
     }
