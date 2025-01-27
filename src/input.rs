@@ -9,10 +9,6 @@ use crate::{
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, keyboard_events.run_if(in_state(GameState::Playing)));
-    app.add_systems(
-        Update,
-        mouse_click_input.run_if(in_state(GameState::Playing)),
-    );
 }
 
 fn keyboard_events(
@@ -20,6 +16,7 @@ fn keyboard_events(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     query: Query<Entity, With<Player>>,
     mut next_state: ResMut<NextState<GameState>>,
+    boss: Single<&Transform, (With<Boss>, Without<Player>)>,
 ) {
     let mut move_dir = Vec3::ZERO;
     if keyboard_input.pressed(KeyCode::ArrowUp) || keyboard_input.pressed(KeyCode::KeyW) {
@@ -40,26 +37,17 @@ fn keyboard_events(
             commands.entity(e).insert(ApplyMove {
                 move_dir: move_dir.normalize(),
             });
+
+            let mut directions = Vec::new();
+            directions.push(boss.translation);
+            commands.entity(e).insert(WantToShoot {
+                dir: directions,
+                entity: e,
+            });
         }
     }
 
     if keyboard_input.pressed(KeyCode::Escape) {
         next_state.set(GameState::PauseMenu)
-    }
-}
-
-fn mouse_click_input(
-    mut commands: Commands,
-    mouse_button_input: Res<ButtonInput<MouseButton>>,
-    player: Single<Entity, (With<Player>, Without<Boss>)>,
-    boss: Single<&Transform, (With<Boss>, Without<Player>)>,
-) {
-    if mouse_button_input.pressed(MouseButton::Left) {
-        let mut directions = Vec::new();
-        directions.push(boss.translation);
-        commands.entity(*player).insert(WantToShoot {
-            dir: directions,
-            entity: *player,
-        });
     }
 }

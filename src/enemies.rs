@@ -1,6 +1,5 @@
-use std::{thread, time::Duration};
 
-use bevy::{prelude::*, utils::info, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
     assets::CharsetAsset,
