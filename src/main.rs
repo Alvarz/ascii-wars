@@ -7,7 +7,7 @@ const SCREEN_HEIGHT: i32 = 1050;
 // 16:9
 // pub const SCREEN_WIDTH: i32 = 1920;
 // pub const SCREEN_HEIGHT: i32 = 1080;
-const RESOLUTION_SCALE: f32 = 0.5;
+const RESOLUTION_SCALE: f32 = 1.0;
 pub const PROJECT_NAME: &str = "ASCII Wars!";
 
 fn main() {

@@ -71,7 +71,7 @@ fn prepare_level(
 
     game_status.level += 1;
 
-    spawn_player(&mut commands, &chaset);
+    spawn_player(&mut commands, &chaset, window);
 
     spawn_level_boss(&mut commands, &chaset, window, game_status.level);
 
