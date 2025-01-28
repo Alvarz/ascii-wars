@@ -1,4 +1,4 @@
-use bevy::{prelude::*, window::WindowMode};
+use bevy::prelude::*;
 
 use boss_rush::AppPlugin;
 // 16:10
@@ -7,7 +7,7 @@ const SCREEN_HEIGHT: i32 = 1050;
 // 16:9
 // pub const SCREEN_WIDTH: i32 = 1920;
 // pub const SCREEN_HEIGHT: i32 = 1080;
-const RESOLUTION_SCALE: f32 = 1.0;
+const RESOLUTION_SCALE: f32 = 0.75;
 pub const PROJECT_NAME: &str = "ASCII Wars!";
 
 fn main() {
@@ -19,7 +19,6 @@ fn main() {
                     primary_window: Some(Window {
                         resizable: false,
                         present_mode: bevy::window::PresentMode::AutoVsync,
-                        // mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
                         title: PROJECT_NAME.to_string(),
                         resolution: (
                             SCREEN_WIDTH as f32 * RESOLUTION_SCALE,

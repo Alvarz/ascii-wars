@@ -24,7 +24,6 @@ use bevy::{
         view::ViewTarget,
         RenderApp,
     },
-    ui::UiPassNode,
 };
 const SHADER_ASSET_PATH: &str = "shaders/crt.wgsl";
 
@@ -277,7 +276,7 @@ impl FromWorld for PostProcessPipeline {
                     // It can be anything as long as it matches here and in the shader.
                     entry_point: "fragment".into(),
                     targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::Rgba16Float,
+                        format: TextureFormat::bevy_default(),
                         blend: None,
                         write_mask: ColorWrites::ALL,
                     })],
@@ -307,9 +306,7 @@ pub struct CrtSettings {
     pub curvature: f32,         // Amount of screen curvature
     pub aberration_offset: f32, // Offset for RGB channel shift (color aberration)
     pub vignette_strength: f32, // Strength of vignette effect
-    //     pub line_thickness: f32, // Thickness of the scanlines
-
     // WebGL2 structs must be 16 byte aligned.
-    #[cfg(feature = "webgl2")]
-    _webgl2_padding: Vec3,
+    #[cfg(target_arch = "wasm32")]
+    pub _webgl2_padding: Vec3, // required for web
 }

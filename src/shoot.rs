@@ -139,11 +139,8 @@ fn check_for_collisions(
     for (bullet_e, bullet_transform, bullet) in &bullets {
         for (e, transform, mut pool) in &mut no_bullets {
             let collision = check_collision(
-                BoundingCircle::new(bullet_transform.translation.truncate(), 8. * 0.5),
-                Aabb2d::new(
-                    transform.translation.truncate(),
-                    transform.scale.truncate() * 0.5,
-                ),
+                BoundingCircle::new(bullet_transform.translation.truncate(), 8.),
+                Aabb2d::new(transform.translation.truncate(), transform.scale.truncate()),
             );
 
             if let Some(_) = collision {

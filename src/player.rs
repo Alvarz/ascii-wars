@@ -48,7 +48,7 @@ pub fn spawn_player(commands: &mut Commands, chaset: &CharsetAsset, window: &Win
             health: 10.,
             max_health: 10.,
             damage: 2.,
-            god_mode: true,
+            god_mode: false,
         },
         GamePlayEntity,
     ));

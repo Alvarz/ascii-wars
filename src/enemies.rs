@@ -1,4 +1,3 @@
-
 use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
@@ -74,7 +73,6 @@ struct ShootPatternDirectShoot {
     fire_rate: f32,
     bullet_size: f32,
     bullet_glyph: usize,
-    bullet_frequency: u64,
 }
 
 #[derive(Resource)]
@@ -217,8 +215,8 @@ pub fn spawn_boss(commands: &mut Commands, chaset: &CharsetAsset, window: &Windo
             Boss {},
             // Direction::Up,
             Pool {
-                health: 1000.,
-                max_health: 1000.,
+                health: 1500.,
+                max_health: 1500.,
                 damage: 2.,
                 god_mode: false,
             },
@@ -495,7 +493,6 @@ fn the_sentinel(commands: &mut Commands, e: Entity) {
             fire_rate: 1.,
             bullet_size: 3.0,
             bullet_glyph: '|' as usize,
-            bullet_frequency: 0.2 as u64,
         },
     ));
 }
@@ -537,7 +534,6 @@ fn the_watcher(commands: &mut Commands, e: Entity) {
             fire_rate: 3.,
             bullet_size: 3.0,
             bullet_glyph: '|' as usize,
-            bullet_frequency: 0.2 as u64,
         },
     ));
 }
@@ -558,7 +554,6 @@ fn the_infernal_imp(commands: &mut Commands, e: Entity) {
             fire_rate: 2.,
             bullet_size: 2.0,
             bullet_glyph: 'O' as usize,
-            bullet_frequency: 0.2 as u64,
         },
         ShootPattern2 {
             bullet_speed: 100.,
@@ -616,7 +611,6 @@ fn the_guardian_order(commands: &mut Commands, e: Entity) {
             fire_rate: 2.,
             bullet_size: 2.0,
             bullet_glyph: 'o' as usize,
-            bullet_frequency: 0.2 as u64,
         },
         ShootPattern2 {
             bullet_speed: 300.,
@@ -669,7 +663,6 @@ fn the_swarm_king(commands: &mut Commands, e: Entity) {
             fire_rate: 1.,
             bullet_size: 3.0,
             bullet_glyph: '.' as usize,
-            bullet_frequency: 0.2 as u64,
         },
     ));
 }
@@ -698,7 +691,6 @@ fn the_celestial_tyrant(commands: &mut Commands, e: Entity) {
             fire_rate: 0.4,
             bullet_size: 2.0,
             bullet_glyph: 'x' as usize,
-            bullet_frequency: 0.2 as u64,
         },
         ShootPattern3 {
             bullet_speed: 250.,
@@ -759,7 +751,6 @@ fn the_clockwork_leviathan(commands: &mut Commands, e: Entity) {
             fire_rate: 2.35,
             bullet_size: 2.0,
             bullet_glyph: 'x' as usize,
-            bullet_frequency: 0.2 as u64,
         },
     ));
 }
@@ -812,7 +803,6 @@ fn the_chaos_reaper(commands: &mut Commands, e: Entity) {
             fire_rate: 5.3,
             bullet_size: 2.0,
             bullet_glyph: 'x' as usize,
-            bullet_frequency: 0.2 as u64,
         },
     ));
 }
