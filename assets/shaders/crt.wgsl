@@ -9,9 +9,9 @@ struct CrtSettings {
     curvature: f32,         // Amount of screen curvature
     vignette_strength: f32, // Strength of vignette effect
     aberration_offset: f32,
-// #ifdef SIXTEEN_BYTE_ALIGNMENT
+#ifdef SIXTEEN_BYTE_ALIGNMENT
     _webgl2_padding: vec2<f32>
-// #endif
+#endif
 }
 @group(0) @binding(2) var<uniform> settings: CrtSettings;
 
