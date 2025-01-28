@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{asset::AssetMetaCheck, prelude::*};
 
 use boss_rush::AppPlugin;
 // 16:10
@@ -28,6 +28,10 @@ fn main() {
                         ..Default::default()
                     }),
                     ..Default::default()
+                })
+                .set(AssetPlugin {
+                    meta_check: AssetMetaCheck::Never,
+                    ..default()
                 }),
         ) // fallback to nearest sampling
         .add_plugins(AppPlugin)
