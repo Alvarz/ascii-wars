@@ -7,11 +7,11 @@ struct CrtSettings {
     intensity: f32,         // Intensity of the scanline effect
     line_thickness: f32,    // Thickness of the scanlines
     curvature: f32,         // Amount of screen curvature
-    aberration_offset: f32, // Offset for RGB channel shift (color aberration)
     vignette_strength: f32, // Strength of vignette effect
-#ifdef SIXTEEN_BYTE_ALIGNMENT
+    aberration_offset: f32,
+// #ifdef SIXTEEN_BYTE_ALIGNMENT
     _webgl2_padding: vec2<f32>
-#endif
+// #endif
 }
 @group(0) @binding(2) var<uniform> settings: CrtSettings;
 
@@ -19,6 +19,7 @@ struct CrtSettings {
 fn fragment(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     // Normalize the UV coordinates
     let uv = in.uv;
+
 
     // Curvature distortion
     let uv_offset = uv - vec2<f32>(0.5);
