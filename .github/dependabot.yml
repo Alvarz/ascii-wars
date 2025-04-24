@@ -3,10 +3,14 @@
 
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+    interval: daily
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
     ignore:
         # These are peer deps of Cargo and should not be automatically bumped
         - dependency-name: "semver"
